@@ -1,0 +1,15 @@
+{
+  "nombre": "JSON",
+  "fecha": "01-01-2000",
+  "activo": true,
+  "elementos": [
+    {
+      "id": 1,
+      "descripción": "Elemento 1"
+    },
+    {
+      "id": 2,
+      "descripción": "Elemento 2"
+    }
+  ]
+}
