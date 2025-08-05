@@ -1,11 +1,11 @@
-import http from 'node:http'; // Módulo para crear un servidor HTTP
+import http from 'node:http'; // Permite crear un servidor HTTP
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url'; // Módulo para manejar URLs de archivos
+import { fileURLToPath } from 'node:url'; // Permite manejar URLs de archivos
 import { styleText as c } from 'node:util';
 
-// NOTA: __filename y __dirname son variables globales solo en módulos CommonJS.
+// NOTA: `__filename` y `__dirname` son variables globales solo en módulos CommonJS.
 const __filename = fileURLToPath(import.meta.url); // Obtener el nombre del archivo actual
 const __dirname = path.dirname(__filename); // Obtener el directorio del archivo actual
 const PUBLIC_DIR = path.join(__dirname, 'public'); // Ruta absoluta a la carpeta /public
@@ -36,7 +36,12 @@ const server = http.createServer(async (req, res) => { // Petición y respuesta
 	const currentPath = url.split('?')[0]; // Ignorar query-strings primero
 	const safePath = decodeURIComponent(currentPath); // Luego decodificar la ruta
 
-	console.log(c('green', 'Petición:'), c('magenta', method), c('cyan', url));
+	console.log(
+		c('gray', new Date().toLocaleString()),
+		c('green', 'Petición:'),
+		c('magenta', method),
+		c('cyan', url)
+	);
 
 	// Manejar peticiones GET
 	let filePath = safePath === '/' ? '/index.html' : safePath;
@@ -75,8 +80,8 @@ server.listen(PORT, HOST, console.log(
 
 // Manejar cierre del servidor
 ['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
-	// SIGINT Proceso interrumpido, causa común: Usuario (Ctrl+C)
-	// SIGTERM Proceso terminado de forma limpia, causa común: Sistema o comandos (kill)
+	// SIGINT: Proceso interrumpido; causa común: Usuario (Ctrl+C)
+	// SIGTERM: Proceso terminado de forma limpia; causa común: Sistema o comandos (kill)
 	console.log('\nCerrando servidor...');
 	server.close(() => {
 		console.log(c('green', 'Servidor cerrado correctamente'));

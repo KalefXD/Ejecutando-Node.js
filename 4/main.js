@@ -1,13 +1,19 @@
 import { exit, stdin, stdout } from 'node:process';
 import { styleText as c } from 'node:util';
 
-// Verificar si la dependencia zod está instalada (NOTA: No se recomienda hacer esto)
-const z = await import('zod') // Módulo externo para validación de esquemas
+/** NOTA:
+ * Normalmente, debes tener las dependencias instaladas antes de ejecutar un código.
+ * Esta practica no es común en un entorno de producción ni recomendable.
+ * Aquí se hace para demostrar cómo manejar la ausencia de una dependencia.
+ * Consejo: Instala las dependencias necesarias antes de ejecutar un código desde ahora.
+ */
+// Verificar si la dependencia zod está instalada
+const z = await import('zod') // Módulo externo que permite validar datos de forma sencilla
 	.then(module => {
 		console.log(c('gray', 'La dependencia "zod" está instalada.'));
 		return module;
 	})
-	.catch(() => { // NOTA: Ten instaladas las dependencias antes de ejecutar cada código
+	.catch(() => {
 		console.error(
 			c('red', 'Error: La dependencia "zod" no está instalada.'),
 			c('red', '\nEjecuta: npm install zod'),
@@ -16,7 +22,7 @@ const z = await import('zod') // Módulo externo para validación de esquemas
 		exit(1);
 	});
 
-import readline from 'node:readline'; // Módulo para manejar la entrada/salida estándar
+import readline from 'node:readline'; // Permite leer líneas de entrada desde la consola
 
 // Configurar readline para entrada/salida estándar
 const rl = readline.createInterface({
