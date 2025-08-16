@@ -1,47 +1,67 @@
-import { argv, exit } from 'node:process'; // Proporciona información y control sobre el proceso actual de Node.js
-import path from 'node:path'; // Proporciona utilidades para trabajar con rutas de archivos y directorios
-import fs from 'node:fs/promises'; // Permite trabajar con el sistema de archivos
+import { argv, exit } from 'node:process';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 import { styleText as c } from 'node:util';
 
-// Extraer los argumentos de la línea de comandos
-const [,, fileArg, textArg] = argv; // `argv[0]` Path del ejecutable de Node.js; `argv[1]` Path del script actual
+/** Nota:
+ * El módulo `node:process` permite acceder a información y controlar el proceso en ejecución.
+ * El módulo `node:path` proporciona utilidades para trabajar con rutas de archivos y directorios de forma multiplataforma.
+ * El submódulo `node:fs/promises` permite interactuar con el sistema de archivos utilizando promesas en lugar de callbacks.
+ */
 
-// Validar de argumentos
+// Extraer argumentos de la línea de comandos
+const [,, fileArg, textArg] = argv;
+
+/** Nota:
+ * `argv` es un arreglo que contiene los argumentos pasados al ejecutar el script desde la línea de comandos.
+ * El índice 0 es la ruta del ejecutable de Node.js, y el índice 1 es la ruta del script actual.
+ * A partir del índice 2 se encuentran los argumentos personalizados que proporciona el usuario.
+ * Existe una método de `node:util` llamada `parseArgs` que permite manejar los argumentos de forma más estructurada, pero por simplicidad no se usa aquí.
+ */
+
+// Mostrar mensaje de uso si no se pasan los argumentos requeridos
 if (!fileArg || !textArg) {
 	console.error(
 		c('red', 'Uso: node main.js <archivo> <texto>'),
 		'\nDescripción: Añade texto a un archivo, creándolo si no existe.',
 		c('yellow', '\nEjemplo: node main.js archivo.txt "Texto a añadir"')
 	);
-	exit(1); // Termina el proceso. Código 1 = error; código 0 = éxito
+	// Terminar el proceso si faltan argumentos
+	exit(1);
 }
 
-const filePath = path.resolve(fileArg); // Convierte a ruta absoluta
-
-/** NOTA:
- * `fs/promises` usa promesas, permite usar `async/await` para manejar operaciones asíncronas.
- * `fs` usa callbacks, lo que puede complicar el código con "callback hell".
- * `fs/promises` es recomendado para código moderno y asíncrono.
+/** Nota:
+ * `exit` termina el proceso de forma inmediata, en el que se puede especificar un código de salida.
+ * Si se usa `exit(0)` significa que el script terminó correctamente, mientras que `exit(1)` indica un error.
+ * Por defecto, el código de salida es 0, pero esto se puede cambiar con `exitCode` de `node:process`.
  */
-try {
-	await fs.access(filePath); // Verifica si podemos acceder al archivo
-} catch (err) { // Si falla, el archivo no existe y lo crea vacío
-	await fs.writeFile(filePath, '') // Crea el archivo vacío
-		.catch(err => {
-			console.error(c('red', 'Error al crear el archivo:'), err);
-			exit(1);
-		});
 
-	console.log(
-		c('cyan', 'Se ha creado el archivo:'),
-		c('yellow', path.basename(filePath)) // Muestra solo el nombre del archivo
-	);
+// Convertir la ruta del archivo a una ruta absoluta
+const filePath = path.resolve(fileArg);
+
+try {
+    // Verificar si se tiene acceso al archivo
+	await fs.access(filePath);
+} catch (err) {
+    // Si el archivo no existe, crearlo vacío
+    console.log(c('cyan', 'El archivo no existe, se creará uno nuevo.'));
+
+    await fs.writeFile(filePath, '')
+        .catch(err => {
+            console.error(c('red', 'Error al crear el archivo:'), err);
+            exit(1);
+        });
+
+	// Mostrar mensaje de éxito con el nombre del archivo creado
+	console.log(c('green', 'Archivo creado:'), c('yellow', path.basename(filePath)));
 }
 
-await fs.appendFile(filePath, textArg + '\n') // Añade el texto al final del archivo
+// Añadir el texto proporcionado al final del archivo
+await fs.appendFile(filePath, textArg + '\n')
 	.then(console.log(c('cyan', 'Texto añadido a:'), c('yellow', filePath)))
 	.catch(err => console.error(c('red', 'Error al escribir en el archivo:'), err));
 
-fs.readFile(filePath, 'utf8') // Lee el contenido del archivo
+// Leer y mostrar el contenido completo del archivo
+fs.readFile(filePath, 'utf8')
 	.then(data => console.log(c('magenta', 'Contenido del archivo:'), '\n' + data))
 	.catch(err => console.error(c('red', 'Error al leer el archivo:'), err));
