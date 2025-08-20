@@ -4,11 +4,11 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { styleText as c } from 'node:util';
 import {
-  leerNotas,
-  agregarNota,
-  obtenerNota,
-  actualizarNota,
-  eliminarNota
+	leerNotas,
+	agregarNota,
+	obtenerNota,
+	actualizarNota,
+	eliminarNota
 } from './notas.js';
 
 // Obtener nombre y directorio del archivo actual
@@ -17,39 +17,39 @@ const __dirname = path.dirname(__filename);
 
 // Cargar variables de entorno desde un archivo .env
 process.loadEnvFile(path.join(__dirname, '.env'));
-const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.PORT ?? 0;
 const HOST = process.env.HOST ?? 'localhost';
 
-// Función para parsear datos de solicitudes POST, PUT, PATCH y DELETE
+// Función para parsear datos de solicitudes POST, PUT, PATCH y DELETE (JSON)
 function parseJsonData(req) {
 	return new Promise((resolve, reject) => {
 		let body = '';
-		const maxSize = 1024 * 1024; // Limite de 1MB para el cuerpo de la solicitud
+		// Limitar el cuerpo a 1MB
+		const maxSize = 1024 * 1024;
 
 		// Verificar que el Content-Type sea application/json
-        if (!req.headers['content-type']?.includes('application/json')) {
-            return reject(new Error('Content-Type debe ser application/json.'));
-        }
+		if (!req.headers['content-type']?.includes('application/json')) {
+			return reject(new Error('Content-Type debe ser application/json.'));
+		}
 
-		// Manejar los fragmentos de datos cuando llegan
+		// Manejar los fragmentos de datos cuando llegen
 		req.on('data', chunk => {
 			// Detener la conexión si se excede el límite
-            if (body.length > maxSize) {
-                req.socket.destroy();
-                return reject(new Error('Tamaño máximo de datos excedido (1MB)'));
-            }
+			if (body.length > maxSize) {
+				req.socket.destroy();
+				return reject(new Error('Tamaño máximo de datos excedido (1MB)'));
+			}
 			// Acumular los fragmentos
-            body += chunk.toString('utf8');
+			body += chunk.toString('utf8');
 		});
 
-		// Manejar el cierre de la petición cuando termina de recibir datos
+		// Manejar el cierre de la petición cuando termine de recibir datos
 		req.on('end', () => {
-            try {
-				// Intentar parsear el cuerpo como JSON
-                resolve(JSON.parse(body));
-            } catch (err) {
-                reject(new Error('JSON inválido: ' + err.message));
-            }
+			try {
+				resolve(JSON.parse(body));
+			} catch (err) {
+				reject(new Error('JSON inválido: ' + err.message));
+			}
 		});
 
 		// Manejar errores de la petición
@@ -65,18 +65,32 @@ const server = http.createServer(async (req, res) => {
 	console.log(
 		c('gray', requestTime.toLocaleTimeString()),
 		c('green', 'Petición:'),
-		c('yellow', `${req.socket.remoteAddress}`),
+		c('yellow', req.socket.remoteAddress),
 		c('magenta', method),
 		c('cyan', url)
 	);
 
+    // Permitir solicitudes desde cualquier origen
+    res.setHeader('Access-Control-Allow-Origin', '*');
+	// Permitir los métodos HTTP especificados
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+	// Permitir los encabezados especificados
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+	// Responder rápidamente a las solicitudes OPTIONS (preflight)
+	if (method === 'OPTIONS') {
+		// 204 No Content para preflight
+		res.writeHead(204);
+		return res.end();
+	}
+
 	// Función para manejar respuestas JSON
 	const send = (status, data) => {
 		res.writeHead(status, { 'Content-Type': 'application/json' });
-		res.end(JSON.stringify(data));
+		res.end(data !== null ? JSON.stringify(data) : '');
 	};
 
-	const currentPath = decodeURIComponent(path.normalize(url).split('?')[0]);
+	const currentPath = decodeURIComponent(url.split('?')[0]);
 
 	// Manejar las peticiones de notas y sus IDs
 	const partes = currentPath.split('/').filter(Boolean);
@@ -84,7 +98,7 @@ const server = http.createServer(async (req, res) => {
 	const id = partes[1];
 
 	try {
-		// Enrutamiento para el recurso "notas"
+		// Enrutar el recurso "notas" 
 		if (resource === 'notas') {
 			if (method === 'GET' && !id) {
 				const notas = await leerNotas();
@@ -110,7 +124,6 @@ const server = http.createServer(async (req, res) => {
 				return exito ? send(204, null) : send(404, { error: 'Nota no encontrada' }); // 204 No Content
 			}
 		}
-
 		return send(404, { error: 'Ruta no encontrada' });
 
 	} catch (err) {
@@ -126,14 +139,13 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-    const { port } = server.address();
+	const { port } = server.address();
 	console.log(
-    	c('magenta', 'Servidor de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}`),
-    	c('cyan', '\nPunto de entrada:'), c('yellow', `/notas`),
+		c('magenta', 'Servidor de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}`),
+		c('cyan', '\nPunto de entrada:'), c('yellow', `/notas`),
 		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });
-
 
 ['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
 	console.log('\nCerrando servidor...');

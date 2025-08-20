@@ -2,18 +2,28 @@ import express from 'express'; // Módulo externo para crear el servidor
 import cors from 'cors'; // Módulo externo para permitir solicitudes desde otros orígenes
 import { env } from 'node:process';
 import { styleText as c } from 'node:util';
-import { createNoteSchema, updateNoteSchema } from './notes.schema.js'; // Importa los esquemas de validación
+import { createNoteSchema, updateNoteSchema } from './notas.schema.js'; // Importa los esquemas de validación
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = env.PORT ?? 3000;
 const HOST = env.HOST ?? 'localhost';
-const app = express(); // Crea una instancia de Express
 
- // Array para almacenar las notas
-const notes = []; // NOTA: Esto se almacenaría en una base de datos persistente en un entorno real
+// Crear la instancia de Express
+const app = express();
 
-app.use(cors()); // Middleware para permitir solicitudes CORS
-app.use(express.json()); // Middleware para parsear JSON
-app.disable('x-powered-by'); // Desactiva el header X-Powered-By para mayor seguridad
+ // Similar una base de datos en un array para almacenar las notas
+const notes = [];
+
+// Permitir solicitudes CORS con un Middleware
+app.use(cors());
+
+// Parsear JSON con un Middleware
+app.use(express.json());
+
+// Desactivar el header X-Powered-By para mayor seguridad
+app.disable('x-powered-by');
 
 app.get('/api/notes', (req, res) => {
 	const { tags } = req.query;
@@ -23,6 +33,7 @@ app.get('/api/notes', (req, res) => {
 		);
 		return res.json(filterNotes);
 	}
+
 	res.json(notes);
 });
 
@@ -54,7 +65,7 @@ app.post('/api/notes', (req, res) => {
 app.patch('/api/notes/:id', (req, res) => {
 	const note = notes.find(n => n.id === req.params.id);
 	if (!note) return res.status(404).json({ error: 'Not found' });
-  
+
 	const result = updateNoteSchema.safeParse(req.body);
 	if (!result.success) {
 		return res.status(400).json({ error: JSON.parse(z.treeifyError(result.error)) })
@@ -77,7 +88,9 @@ app.use((req, res) => {
 	res.status(404).send('Ruta no encontrada');
 });
 
-app.listen(PORT, HOST, console.log(
-	c('magenta', 'Servidor ejecutándose en:'), c('yellow', `http://${HOST}:${PORT}`),
-	c('gray', '\nPresiona Ctrl+C para detener el servidor\n')
-));
+app.listen(PORT, HOST, () => {
+	console.log(
+		c('magenta', 'Servidor ejecutándose en:'), c('yellow', `http://${HOST}:${PORT}`),
+		c('gray', '\nPresiona Ctrl+C para detener el servidor\n')
+	);
+});

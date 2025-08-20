@@ -17,7 +17,7 @@ const HOST = process.env.HOST ?? 'localhost';
 
 if (!process.argv[2]) console.log(
 	c('red', 'Uso: node main.js <carpeta>'),
-	c('green', '[opcional: directorio del archivo actual]'),
+	c('green', '[opcional: directorio actual]'),
 	'\nDescripción: Inicia un servidor HTTP que sirve archivos estáticos.',
 );
 
@@ -54,13 +54,13 @@ const server = http.createServer(async (req, res) => {
 	console.log(
 		c('gray', requestTime.toLocaleTimeString()),
 		c('green', 'Petición:'),
-		c('yellow', `${req.socket.remoteAddress}`),
+		c('yellow', req.socket.remoteAddress),
 		c('magenta', method),
 		c('cyan', url)
 	);
 
-    // Normalizar ruta, ignorar query-strings y decodificar la URL
-    const currentPath = decodeURIComponent(path.normalize(url).split('?')[0]);
+    // Ignorar query-strings y decodificar la URL
+    const currentPath = decodeURIComponent(url.split('?')[0]);
 	let filePath = path.join(PUBLIC_DIR, currentPath);
 
 	// Si la ruta es un directorio, buscar el archivo index.html
@@ -109,8 +109,8 @@ server.listen(PORT, HOST, () => {
 	// Mostrar información del servidor al iniciar
     const { port } = server.address();
 	console.log(
-		c('cyan', '\nCarpeta pública:'), c('yellow', PUBLIC_DIR),
 		c('magenta', '\nServidor HTTP iniciado en:'), c('yellow', `http://${HOST}:${port}`),
+		c('cyan', '\nCarpeta pública:'), c('yellow', PUBLIC_DIR),
 		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });
@@ -127,5 +127,5 @@ server.listen(PORT, HOST, () => {
 /** Nota:
  * `SIGINT` y `SIGTERM` son señales que el sistema operativo envía a un proceso para solicitar su terminación.
  * La primera es comúnmente enviada por el usuario (Ctrl+C), y la segunda por herramientas de sistema o comandos (kill).
- * Estas señales nos permite realizar una limpieza (como cerrar el servidor o la base de datos) antes de que el proceso finalice abruptamente.
+ * Estas señales nos permiten realizar una limpieza (como cerrar el servidor o la base de datos) antes de que el proceso finalice abruptamente.
  */

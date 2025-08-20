@@ -20,9 +20,9 @@ const z = await import('zod')
  * Se gestionan con un manejador de paquetes como `npm` y se listan en un archivo `package.json`.
  * La dependencia `zod` sirve para validar y tipar datos de forma segura en JavaScript/TypeScript.
  *
- * IMPORTANTE: La verificación de instalación con `await import()` es un recurso didáctico, NO una práctica común.
+ * **IMPORTANTE:** La verificación de instalación con `await import()` es un recurso didáctico, no una práctica común.
  * En proyectos reales, se asume que las dependencias ya fueron instaladas con `npm install`.
- * A partir de ahora, deberás instalar las dependencias por tu cuenta antes de ejecutar los siguientes scripts.
+ * A partir de ahora, deberás instalar las dependencias por tu cuenta antes de ejecutar los scripts siguientes.
  */
 
 import readline from 'node:readline';

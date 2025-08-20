@@ -16,7 +16,7 @@ const [,, fileArg, textArg] = argv;
  * `argv` es un arreglo que contiene los argumentos pasados al ejecutar el script desde la línea de comandos.
  * El índice 0 es la ruta del ejecutable de Node.js, y el índice 1 es la ruta del script actual.
  * A partir del índice 2 se encuentran los argumentos personalizados que proporciona el usuario.
- * Existe una método de `node:util` llamada `parseArgs` que permite manejar los argumentos de forma más estructurada, pero por simplicidad no se usa aquí.
+ * Existe un método de `node:util` llamado `parseArgs` que permite manejar los argumentos de forma más estructurada, pero por simplicidad no se utiliza aquí.
  */
 
 // Mostrar mensaje de uso si no se pasan los argumentos requeridos
@@ -31,8 +31,8 @@ if (!fileArg || !textArg) {
 }
 
 /** Nota:
- * `exit` termina el proceso de forma inmediata, en el que se puede especificar un código de salida.
- * Si se usa `exit(0)` significa que el script terminó correctamente, mientras que `exit(1)` indica un error.
+ * `exit` termina el proceso de forma inmediata, donde se puede especificar un código de salida.
+ * Si se usa `exit(0)`, significa que el script terminó correctamente, mientras que `exit(1)` indica un error.
  * Por defecto, el código de salida es 0, pero esto se puede cambiar con `exitCode` de `node:process`.
  */
 
@@ -43,7 +43,7 @@ try {
     // Verificar si se tiene acceso al archivo
 	await fs.access(filePath);
 } catch (err) {
-    // Si el archivo no existe, crearlo vacío
+    // Crearlo vacío si el archivo no existe
     console.log(c('cyan', 'El archivo no existe, se creará uno nuevo.'));
 
     await fs.writeFile(filePath, '')

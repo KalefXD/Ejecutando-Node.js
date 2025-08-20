@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Prueba API de Notas</title>
+	<style>
+		:root { color-scheme: light dark; }
+		body { font-family: Arial, sans-serif; margin: 20px; }
+		textarea, input { box-sizing: border-box; width: 100%; margin: 5px 0; padding: 8px; }
+		button { margin: 5px 2px; padding: 8px 12px; cursor: pointer; }
+		pre { background: #0008; padding: 10px; border-radius: 5px; }
+		.nota { border: 1px solid #0006; padding: 10px; margin: 10px 0; border-radius: 5px; }
+	</style>
+</head>
+<body>
+	<h1>Cliente de API - Notas</h1>
+
+	<h2>Ver todas las notas</h2>
+	<button onclick="getNotas()">Cargar notas</button>
+	<div id="notas"></div>
+
+	<h2>Crear nueva nota</h2>
+	<textarea id="nuevaNota" placeholder="Escribe el contenido de la nota"></textarea>
+	<button onclick="crearNota()">Agregar</button>
+
+	<h2>Actualizar nota</h2>
+	<input type="text" id="notaIdActualizar" placeholder="ID de la nota">
+	<textarea id="notaContenidoActualizar" placeholder="Nuevo contenido"></textarea>
+	<button onclick="actualizarNota()">Actualizar (PUT)</button>
+	<button onclick="patchNota()">Actualizar parcialmente (PATCH)</button>
+
+	<h2>Eliminar nota</h2>
+	<input type="text" id="notaIdEliminar" placeholder="ID de la nota">
+	<button onclick="eliminarNota()">Eliminar</button>
+
+	<h2>Respuesta de la API</h2>
+	<pre id="respuesta"></pre>
+
+	<script>
+		const API_URL = "http://localhost:3000/notas"; // Ajusta el puerto si cambia
+
+		function mostrarRespuesta(data) {
+			document.getElementById("respuesta").textContent = JSON.stringify(data, null, 2);
+		}
+
+		async function getNotas() {
+			const res = await fetch(API_URL);
+			const data = await res.json();
+			mostrarRespuesta(data);
+
+			const notasDiv = document.getElementById("notas");
+			notasDiv.innerHTML = "";
+			data.forEach(nota => {
+				const div = document.createElement("div");
+				div.className = "nota";
+				div.textContent = `[${nota.id}] ${nota.contenido ?? JSON.stringify(nota)}`;
+				notasDiv.appendChild(div);
+			});
+		}
+
+		async function crearNota() {
+			const contenido = document.getElementById("nuevaNota").value;
+			const res = await fetch(API_URL, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ contenido })
+			});
+			const data = await res.json();
+			mostrarRespuesta(data);
+			getNotas();
+		}
+
+		async function actualizarNota() {
+			const id = document.getElementById("notaIdActualizar").value;
+			const contenido = document.getElementById("notaContenidoActualizar").value;
+			const res = await fetch(`${API_URL}/${id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ contenido })
+			});
+			const data = await res.json();
+			mostrarRespuesta(data);
+			getNotas();
+		}
+
+		async function patchNota() {
+			const id = document.getElementById("notaIdActualizar").value;
+			const contenido = document.getElementById("notaContenidoActualizar").value;
+			const res = await fetch(`${API_URL}/${id}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ contenido })
+			});
+			const data = await res.json();
+			mostrarRespuesta(data);
+			getNotas();
+		}
+
+		async function eliminarNota() {
+			const id = document.getElementById("notaIdEliminar").value;
+			const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+			if (res.status === 204) {
+				mostrarRespuesta({ mensaje: "Nota eliminada" });
+			} else {
+				const data = await res.json();
+				mostrarRespuesta(data);
+			}
+			getNotas();
+		}
+	</script>
+</body>
+</html>

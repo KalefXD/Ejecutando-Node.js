@@ -23,7 +23,7 @@ fs.readdir(folder)
 			c('yellow', path.resolve(folder))
 		);
 
-		// Si el directorio está vacío, informar y salir
+		// Informar y salir si el directorio está vacío, 
 		if (files.length === 0) {
 			console.groupEnd();
 			console.log(c('cyan', 'El directorio está vacío.'));
@@ -42,7 +42,7 @@ fs.readdir(folder)
 			try {
 				stats = await fs.stat(fullPath);
 			} catch (err) {
-				// Si no se puede acceder al archivo, mostrar error y continuar con el siguiente
+				// Mostrar error y continuar con el siguiente si no se puede acceder al archivo
 				console.log(
 					c('red', 'E'),
 					c('cyan', file.padEnd(maxLength)),

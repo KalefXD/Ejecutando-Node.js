@@ -1,6 +1,7 @@
 import z from 'zod';
 
-z.config(z.locales.es()); // Traduce los mensajes de errores al español
+// Traducir los mensajes de errores al español
+z.config(z.locales.es());
 
 export const noteBaseSchema = z.object({
   title: z.string().min(1, "El título es requerido"),
