@@ -77,7 +77,7 @@ const server = http.createServer(async (req, res) => {
 	// Permitir los encabezados especificados
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-	// Responder rápidamente a las solicitudes OPTIONS (preflight)
+	// Responder rápidamente a las solicitudes OPTIONS (PRE-Flight)
 	if (method === 'OPTIONS') {
 		// 204 No Content para preflight
 		res.writeHead(204);

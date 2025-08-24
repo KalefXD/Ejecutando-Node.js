@@ -14,8 +14,11 @@ export const noteBaseSchema = z.object({
 // Crear una nota
 export const createNoteSchema = noteBaseSchema;
 
-// Actualizar una nota (parcial, útil para PATCH)
-export const updateNoteSchema = noteBaseSchema.partial();
+// Actualizaruna nota
+export const updateNoteSchema = noteBaseSchema;
+
+// Actualizar parcialmente una nota
+export const updateNoteSchemaPartial = noteBaseSchema.partial();
 
 // Nota completa con metadatos
 export const noteSchema = noteBaseSchema.extend({

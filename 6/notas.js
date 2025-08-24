@@ -50,7 +50,7 @@ export async function actualizarNota(id, cambios, reemplazar = false) {
 	// No permitir modificar el id
 	const cambiosSinId = { ...cambios };
 	delete cambiosSinId.id;
-	// Reemplazar toda la nota con PUT o actualizar los campos indicados con PATCH
+	// Reemplazar toda la nota para PUT o actualizar los campos indicados para PATCH
 	notas[idx] = reemplazar
 		? { id, ...cambiosSinId }
 		: { ...notaExistente, ...cambiosSinId };

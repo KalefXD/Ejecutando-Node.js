@@ -1,8 +1,20 @@
-import express from 'express'; // Módulo externo para crear el servidor
-import cors from 'cors'; // Módulo externo para permitir solicitudes desde otros orígenes
-import { env } from 'node:process';
+import express from 'express';
+import cors from 'cors';
+import z from 'zod';
+import path from 'node:path';
+import { env, pid } from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { styleText as c } from 'node:util';
-import { createNoteSchema, updateNoteSchema } from './notas.schema.js'; // Importa los esquemas de validación
+import {
+	createNoteSchema,
+	updateNoteSchema,
+	updateNoteSchemaPartial
+} from './notas.schema.js'; // Importa los esquemas de validación
+
+/** Nota:
+ * La dependencia `express` permite crear y gestionar servidores web de forma sencilla y eficiente.
+ * La dependencia `cors` permite habilitar y controlar el acceso de recursos entre distintos orígenes en una API o servidor.
+ */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,22 +22,23 @@ const __dirname = path.dirname(__filename);
 const PORT = env.PORT ?? 3000;
 const HOST = env.HOST ?? 'localhost';
 
-// Crear la instancia de Express
+// Crear la aplicación de Express
 const app = express();
 
- // Similar una base de datos en un array para almacenar las notas
+ // Simular una base de datos en un array para almacenar las notas
 const notes = [];
 
 // Permitir solicitudes CORS con un Middleware
 app.use(cors());
 
-// Parsear JSON con un Middleware
+// Parsear los datos del cuerpo en JSON con un Middleware
 app.use(express.json());
 
 // Desactivar el header X-Powered-By para mayor seguridad
 app.disable('x-powered-by');
 
-app.get('/api/notes', (req, res) => {
+// Obtener todas las notas
+app.get('/notas', (req, res) => {
 	const { tags } = req.query;
 	if (tags) {
 		const filterNotes = notes.filter(
@@ -37,18 +50,18 @@ app.get('/api/notes', (req, res) => {
 	res.json(notes);
 });
 
-// Obtener una por ID
-app.get('/api/notes/:id', (req, res) => {
+// Obtener una nota por ID
+app.get('/notas/:id', (req, res) => {
 	const note = notes.find(n => n.id === req.params.id);
 	if (!note) return res.status(404).json({ error: 'Not found' });
 	res.json(note);
 });
 
-app.post('/api/notes', (req, res) => {
+// Crear nueva nota
+app.post('/notas', (req, res) => {
 	const result = createNoteSchema.safeParse(req.body);
 	if (!result.success) {
-		// Los códigos 400 Bad Request y 422 Unprocessable Entity son intercambiables a veces.
-		return res.status(400).json({ error: JSON.parse(z.treeifyError(result.error)) })
+		return res.status(400).json({ error: z.treeifyError(result.error) })
 	}
 
 	const newNote = {
@@ -62,21 +75,40 @@ app.post('/api/notes', (req, res) => {
 	res.status(201).json(newNote);
 })
 
-app.patch('/api/notes/:id', (req, res) => {
+// Actualizar una nota
+app.put('/notas/:id', async (req, res) => {
 	const note = notes.find(n => n.id === req.params.id);
 	if (!note) return res.status(404).json({ error: 'Not found' });
 
+	delete req.body.id
+	delete req.body.createdAt
 	const result = updateNoteSchema.safeParse(req.body);
 	if (!result.success) {
-		return res.status(400).json({ error: JSON.parse(z.treeifyError(result.error)) })
+		return res.status(400).json({ error: z.treeifyError(result.error) })
 	}
 
-	Object.assign(note, result.data); // muta directamente
+	Object.assign(note, result.data);
 	note.updatedAt = new Date();
 	res.json(note);
 });
 
-app.delete('/api/notes/:id', (req, res) => {
+// Actualizar parcialmente una nota
+app.patch('/notas/:id', (req, res) => {
+	const note = notes.find(n => n.id === req.params.id);
+	if (!note) return res.status(404).json({ error: 'Not found' });
+
+	const result = updateNoteSchemaPartial.safeParse(req.body);
+	if (!result.success) {
+		return res.status(400).json({ error: z.treeifyError(result.error) })
+	}
+
+	Object.assign(note, result.data);
+	note.updatedAt = new Date();
+	res.json(note);
+});
+
+// Eliminar una nota
+app.delete('/notas/:id', (req, res) => {
 	const index = notes.findIndex(n => n.id === req.params.id);
 	if (index === -1) return res.status(404).json({ error: 'Not found' });
 
@@ -84,13 +116,16 @@ app.delete('/api/notes/:id', (req, res) => {
 	res.json(deleted);
 });
 
+// Ruta inexistente
 app.use((req, res) => {
-	res.status(404).send('Ruta no encontrada');
+	res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
 app.listen(PORT, HOST, () => {
 	console.log(
-		c('magenta', 'Servidor ejecutándose en:'), c('yellow', `http://${HOST}:${PORT}`),
-		c('gray', '\nPresiona Ctrl+C para detener el servidor\n')
+		c('magenta', 'Servidor de Notas Express iniciado en:'),
+		c('yellow', `http://${HOST}:${PORT}`),
+		c('cyan', '\nPunto de entrada:'), c('yellow', `/notas`),
+		c('gray', `\nDetén con Ctrl+C o: kill ${pid}\n`)
 	);
 });
