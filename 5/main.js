@@ -25,17 +25,15 @@ if (!process.argv[2]) console.log(
 function getMimeType(filePath) {
 	const ext = path.extname(filePath).toLowerCase();
 	const mimeTypes = {
-		'.txt': 'text/plain', '.html': 'text/html', '.htm': 'text/html',
-		'.css': 'text/css', '.js': 'application/javascript', '.mjs': 'application/javascript',
-		'.json': 'application/json', '.xml': 'application/xml', '.pdf': 'application/pdf',
-		'.png': 'image/png', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg',
-		'.webp': 'image/webp', '.svg': 'image/svg+xml', '.gif': 'image/gif',
-		'.ico': 'image/x-icon', '.mp4': 'video/mp4', '.webm': 'video/webm',
-		'.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg'
+		'.txt': 'text/plain', '.html': 'text/html', '.css': 'text/css',
+		'.js': 'application/javascript', '.json': 'application/json', '.xml': 'application/xml',
+		'.png': 'image/png', '.jpg': 'image/jpeg', '.gif': 'image/gif',
+		'.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.pdf': 'application/pdf',
+		'.mp4': 'video/mp4', '.mp3': 'audio/mpeg', '.wav': 'audio/wav'
 	};
 	const mimeType = mimeTypes[ext] ?? 'application/octet-stream';
 	// Tipos de texto que deben incluir charset=utf-8
-	const textTypes = ['.html', '.css', '.txt', '.js', '.json', '.svg'];
+	const textTypes = ['.txt', '.html', '.css', '.js', '.json', '.svg', '.xml'];
 	return textTypes.includes(ext) ? mimeType + '; charset=utf-8' : mimeType;
 }
 
@@ -60,11 +58,11 @@ const server = http.createServer(async (req, res) => {
 	);
 
     // Ignorar query-strings y decodificar la URL
-    const currentPath = decodeURIComponent(url.split('?')[0]);
-	let filePath = path.join(PUBLIC_DIR, currentPath);
+    const urlPath = decodeURIComponent(url.split('?')[0]);
+	let filePath = path.join(PUBLIC_DIR, urlPath);
 
-	// Si la ruta es un directorio, buscar el archivo index.html
-	if (currentPath.endsWith('/')) filePath = path.join(filePath, 'index.html');
+	// Buscar el archivo index.html si la ruta es un directorio
+	if (urlPath.endsWith('/')) filePath = path.join(filePath, 'index.html');
 
 	try {
 		// Leer el archivo solicitado

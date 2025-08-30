@@ -31,8 +31,8 @@ console.group(c(['magenta', 'underline'], '\nInformación del SO:'));
 	['Release del SO', os.release()],
 	['Arquitectura', os.arch()],
 	['Número de CPUs', os.cpus().length],
-	['Memoria libre (MB)', (os.freemem() / 1024 / 1024).toFixed(2)],
-	['Memoria total (MB)', (os.totalmem() / 1024 / 1024).toFixed(2)],
+	['Memoria libre (MB)', (os.freemem() / 1024 ** 2).toFixed(2)],
+	['Memoria total (MB)', (os.totalmem() / 1024 ** 2).toFixed(2)],
 	['Tiempo de actividad (h)', (os.uptime() / 3600).toFixed(2)],
 	['Directorio de inicio', os.homedir()],
 	['Directorio temporal', os.tmpdir()]
@@ -49,11 +49,11 @@ console.groupEnd();
 console.group(c(['magenta', 'underline'], '\nInformación de red:'));
 Object.entries(os.networkInterfaces()).forEach(([name, interfaces]) => {
 	console.group(c('cyan', 'Interfaz:'), c('yellow', name));
-	interfaces.forEach(addr => console.log(
-			c('green', 'Familia:'), addr.family,
-			c('green', 'Tipo:'), addr.internal ? 'Interna' : 'Externa',
-			c('green', 'Dirección IP:'), addr.address
-		));
+	interfaces?.forEach(addr => console.log(
+		c('green', 'Familia:'), addr.family,
+		c('green', 'Tipo:'), addr.internal ? 'Interna' : 'Externa',
+		c('green', 'Dirección IP:'), addr.address
+	));
 	console.groupEnd();
 });
 console.groupEnd();

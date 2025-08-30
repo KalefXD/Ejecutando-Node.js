@@ -29,7 +29,7 @@ import readline from 'node:readline';
 
 /** Nota:
  * El módulo `node:readline` permite leer y procesar entradas de texto línea por línea desde la consola o desde un flujo de datos.
- * Lo que facilita la creación de interfaces de línea de comandos (CLI) interactivas.
+ * Esto facilita la creación de interfaces de línea de comandos (CLI) interactivas.
  * Puede leer datos desde un flujo de entrada (como `stdin` para el teclado) y escribirlos en un flujo de salida (como `stdout`).
  */
 
@@ -53,7 +53,7 @@ const UserSchema = z.object({
 		.max(120, 'La edad no puede ser mayor a 120'),
 	email: z.email('El correo electrónico debe ser válido'),
 	isActive: z.transform(value => {
-		if (value) return value.toLowerCase() === 'sí' || value.toLowerCase() === 'true';
+		if (value) return ['sí', 'si', 'true', '1'].includes(value.toLowerCase());
 	}).optional()
 });
 

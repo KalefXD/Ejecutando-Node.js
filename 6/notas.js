@@ -14,57 +14,99 @@ async function guardarNotas(notas) {
 // Exportar funciones para las operaciones CRUD (Create, Read, Update, Delete) sobre las notas.
 export async function leerNotas() {
 	try {
+		// Intentar leer el archivo de la base de datos
 		const data = await readFile(DB_PATH, 'utf-8');
 		return JSON.parse(data);
-	} catch {
-		return [];
+	} catch (err) {
+		// Devolver un array vacío si el archivo no existe o está corrupto
+		if (err.code === 'ENOENT') {
+			console.log('Archivo de notas no encontrado, creando base de datos vacía...');
+			return [];
+		}
+		// Propagar el error para otros errores (permisos, JSON malformado, etc.)
+		throw new Error(`Error al leer notas: ${err.message}`);
 	}
 }
 
 export async function agregarNota(nota) {
-	const notas = await leerNotas();
-	// Asignar un id único a la nota usando crypto.randomUUID()
-	const nuevaNota = { ...nota };
-	// Si el usuario intenta enviar un id, ignorarlo
-	delete nuevaNota.id;
-	nuevaNota.id = crypto.randomUUID();
-	notas.push(nuevaNota);
-	await guardarNotas(notas);
-	return nuevaNota;
+	try {
+		const notas = await leerNotas();
+
+		// Crear una nueva nota con campos controlados
+		const nuevaNota = { ...nota };
+
+		// Evitar que el cliente pueda especificar su propio ID
+		delete nuevaNota.id;
+
+		// Asignar un ID único
+		nuevaNota.id = crypto.randomUUID();
+
+		// Agregar la nueva nota al array y guardar
+		notas.push(nuevaNota);
+		await guardarNotas(notas);
+
+		return nuevaNota;
+	} catch (err) {
+		throw new Error(`Error al agregar nota: ${err.message}`);
+	}
 }
 
 
 export async function obtenerNota(id) {
-	const notas = await leerNotas();
-	// Buscar la nota por id
-	return notas.find(n => n.id === id);
+	try {
+		const notas = await leerNotas();
+		
+		// Buscar la nota que coincida con el ID proporcionado
+		const nota = notas.find(n => n.id === id);
+
+		// Devolver null si no se encuentra
+		return nota || null;
+	} catch (err) {
+		throw new Error(`Error al obtener nota con ID ${id}: ${err.message}`);
+	}
 }
 
 
 export async function actualizarNota(id, cambios, reemplazar = false) {
-	const notas = await leerNotas();
-	const idx = notas.findIndex(n => n.id === id);
-	if (idx === -1) return null; // La nota no existe
+	try {
+		const notas = await leerNotas();
 
-	const notaExistente = notas[idx];
-	// No permitir modificar el id
-	const cambiosSinId = { ...cambios };
-	delete cambiosSinId.id;
-	// Reemplazar toda la nota para PUT o actualizar los campos indicados para PATCH
-	notas[idx] = reemplazar
-		? { id, ...cambiosSinId }
-		: { ...notaExistente, ...cambiosSinId };
+		// Buscar el índice de la nota a actualizar
+		const idx = notas.findIndex(n => n.id === id);
+		if (idx === -1) return null; // Devolver null si no existe
 
-	await guardarNotas(notas);
-	return notas[idx];
+		const notaExistente = notas[idx];
+
+		// Preparar los cambios sin permitir modificar el ID
+		const cambiosSinId = { ...cambios };
+		delete cambiosSinId.id; // No permitir cambiar el ID
+
+		// Decidir si reemplazar completamente (PUT) o actualizar parcialmente (PATCH)
+		notas[idx] = reemplazar
+			? { id, ...cambiosSinId }
+			: { ...notaExistente, ...cambiosSinId };
+
+		await guardarNotas(notas);
+		return notas[idx];
+	} catch (err) {
+		throw new Error(`Error al actualizar nota con ID ${id}: ${err.message}`);
+	}
 }
 
 
 export async function eliminarNota(id) {
-	const notas = await leerNotas();
-	const nuevas = notas.filter(n => n.id !== id);
-	// Si la longitud no cambió, la nota no se encontró
-	if (nuevas.length === notas.length) return false;
-	await guardarNotas(nuevas);
-	return true;
+	try {
+		const notas = await leerNotas();
+
+		// Filtrar todas las notas excepto la que tiene el ID a eliminar
+		const nuevas = notas.filter(n => n.id !== id);
+		
+		// Verificar si se eliminó alguna nota comparando las longitudes
+		if (nuevas.length === notas.length) return false; // No se encontró la nota a eliminar
+
+		await guardarNotas(nuevas);
+		return true; // Eliminación exitosa
+	} catch (err) {
+		throw new Error(`Error al eliminar nota con ID ${id}: ${err.message}`);
+	}
 }

@@ -22,110 +22,212 @@ const __dirname = path.dirname(__filename);
 const PORT = env.PORT ?? 3000;
 const HOST = env.HOST ?? 'localhost';
 
-// Crear la aplicación de Express
+// Crear la instancia principal de Express
 const app = express();
 
- // Simular una base de datos en un array para almacenar las notas
-const notes = [];
-
-// Permitir solicitudes CORS con un Middleware
-app.use(cors());
-
-// Parsear los datos del cuerpo en JSON con un Middleware
-app.use(express.json());
+// Simular una base de datos en memoria usando un array (solo para demostración)
+const notas = [];
 
 // Desactivar el header X-Powered-By para mayor seguridad
 app.disable('x-powered-by');
 
+// Middleware para habilitar CORS (Cross-Origin Resource Sharing)
+app.use(cors());
+
+// Middleware para parsear automáticamente el cuerpo de las peticiones como JSON
+app.use(express.json());
+
+/** Nota:
+ * El header "X-Powered-By: Express" revela información sobre la tecnología usada.
+ * Los atacantes pueden usar esta información para exploits específicos de Express.
+ * Es una buena práctica de seguridad ocultar detalles de implementación.
+ */
+
 // Obtener todas las notas
 app.get('/notas', (req, res) => {
 	const { tags } = req.query;
+
+	// Aplicar filtro por etiquetas si se especifica una
 	if (tags) {
-		const filterNotes = notes.filter(
-			note => note.genre.some(t => t.toLowerCase() === tags.toLowerCase())
+		const notasFiltradas = notas.filter(
+			nota => nota.tags && nota.tags.some(tag =>
+				tag.toLowerCase() === tags.toLowerCase()
+			)
 		);
-		return res.json(filterNotes);
+		return res.json(notasFiltradas);
 	}
 
-	res.json(notes);
+	// Si no hay filtros, devolver todas las notas
+	res.json(notas);
 });
 
 // Obtener una nota por ID
 app.get('/notas/:id', (req, res) => {
-	const note = notes.find(n => n.id === req.params.id);
-	if (!note) return res.status(404).json({ error: 'Not found' });
-	res.json(note);
+	const nota = notas.find(n => n.id === req.params.id);
+	if (!nota) return res.status(404).json({ error: 'Not found' });
+
+	res.json(nota);
 });
 
 // Crear nueva nota
 app.post('/notas', (req, res) => {
+	// Validar los datos recibidos usando el esquema Zod
 	const result = createNoteSchema.safeParse(req.body);
+
 	if (!result.success) {
-		return res.status(400).json({ error: z.treeifyError(result.error) })
+		// Si la validación falla, devolver error 400 con detalles específicos
+		return res.status(400).json({ 
+			error: 'Datos de entrada inválidos',
+			detalles: z.treeifyError(result.error)
+		});
 	}
 
-	const newNote = {
+	// Crear nueva nota con los datos validados y metadatos automáticos
+	const nuevaNota = {
 		id: crypto.randomUUID(),
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		...result.data
-	}
+		...result.data // Spread de los datos validados
+	};
 
-	notes.push(newNote);
-	res.status(201).json(newNote);
+	// Agregar a la "base de datos" en memoria
+	notas.push(nuevaNota);
+
+	// Responder con estatus 201 (Created) y la nota creada
+	res.status(201).json(nuevaNota);
 })
 
-// Actualizar una nota
+// Reemplazar completamente una nota
 app.put('/notas/:id', async (req, res) => {
-	const note = notes.find(n => n.id === req.params.id);
-	if (!note) return res.status(404).json({ error: 'Not found' });
-
-	delete req.body.id
-	delete req.body.createdAt
-	const result = updateNoteSchema.safeParse(req.body);
-	if (!result.success) {
-		return res.status(400).json({ error: z.treeifyError(result.error) })
+	// Buscar la nota existente
+	const nota = notas.find(n => n.id === req.params.id);
+	if (!nota) {
+		return res.status(404).json({ error: 'Nota no encontrada' });
 	}
 
-	Object.assign(note, result.data);
-	note.updatedAt = new Date();
-	res.json(note);
+	// Prevenir modificación de campos protegidos
+	delete req.body.id;
+	delete req.body.createdAt;
+
+	// Validar los nuevos datos
+	const result = updateNoteSchema.safeParse(req.body);
+	if (!result.success) {
+		return res.status(400).json({ 
+			error: 'Datos de entrada inválidos',
+			detalles: z.treeifyError(result.error)
+		});
+	}
+
+	// Reemplazar todos los campos manteniendo metadatos protegidos
+	Object.assign(nota, {
+		...result.data,
+		id: nota.id, // Mantener ID original
+		createdAt: nota.createdAt, // Mantener fecha de creación
+		updatedAt: new Date() // Actualizar timestamp
+	});
+
+	res.json(nota);
 });
 
 // Actualizar parcialmente una nota
 app.patch('/notas/:id', (req, res) => {
-	const note = notes.find(n => n.id === req.params.id);
-	if (!note) return res.status(404).json({ error: 'Not found' });
-
-	const result = updateNoteSchemaPartial.safeParse(req.body);
-	if (!result.success) {
-		return res.status(400).json({ error: z.treeifyError(result.error) })
+	// Buscar la nota existente
+	const nota = notas.find(n => n.id === req.params.id);
+	if (!nota) {
+		return res.status(404).json({ error: 'Nota no encontrada' });
 	}
 
-	Object.assign(note, result.data);
-	note.updatedAt = new Date();
-	res.json(note);
+	// Prevenir modificación de campos protegidos
+	delete req.body.id;
+	delete req.body.createdAt;
+
+	// Validar usando el esquema parcial (todos los campos opcionales)
+	const result = updateNoteSchemaPartial.safeParse(req.body);
+	if (!result.success) {
+		return res.status(400).json({
+			error: 'Datos de entrada inválidos',
+			detalles: z.treeifyError(result.error)
+		});
+	}
+
+	// Actualizar solo los campos proporcionados
+	Object.assign(nota, result.data, {
+		updatedAt: new Date() // Siempre actualizar timestamp
+	});
+
+	res.json(nota);
 });
 
 // Eliminar una nota
 app.delete('/notas/:id', (req, res) => {
-	const index = notes.findIndex(n => n.id === req.params.id);
-	if (index === -1) return res.status(404).json({ error: 'Not found' });
+	// Buscar el índice de la nota a eliminar
+	const index = notas.findIndex(n => n.id === req.params.id);
 
-	const deleted = notes.splice(index, 1)[0];
-	res.json(deleted);
+	if (index === -1)  return res.status(404).json({ error: 'Nota no encontrada' });
+
+	// Eliminar la nota del array y obtener la nota eliminada
+	const [notaEliminada] = notas.splice(index, 1);
+
+	// Responder con la nota eliminada para confirmación
+	res.json({ 
+		mensaje: 'Nota eliminada exitosamente',
+		nota: notaEliminada 
+	});
 });
 
-// Ruta inexistente
+// Middleware para manejar rutas no encontradas (debe ir después de todas las rutas)
 app.use((req, res) => {
-	res.status(404).json({ error: 'Ruta no encontrada' });
+	res.status(404).json({ 
+		error: 'Endpoint no encontrado',
+		mensaje: `La ruta ${req.method} ${req.originalUrl} no existe`,
+		endpointsDisponibles: [
+			'GET /notas',
+			'GET /notas/:id', 
+			'POST /notas',
+			'PUT /notas/:id',
+			'PATCH /notas/:id',
+			'DELETE /notas/:id'
+		]
+	});
+});
+
+// Middleware global para manejo de errores al final
+app.use((err, req, res, next) => {
+	// Registrar el error para debugging
+	console.error('Error no manejado:', err);
+
+	// Responder con error genérico al cliente
+	res.status(500).json({
+		error: 'Error interno del servidor',
+		mensaje: 'Ocurrió un error inesperado. Por favor intente más tarde.'
+	});
 });
 
 app.listen(PORT, HOST, () => {
 	console.log(
-		c('magenta', 'Servidor de Notas Express iniciado en:'),
-		c('yellow', `http://${HOST}:${PORT}`),
+		c('magenta', 'Servidor de Notas con Express iniciado en:'), c('yellow', `http://${HOST}:${PORT}`),
 		c('cyan', '\nPunto de entrada:'), c('yellow', `/notas`),
-		c('gray', `\nDetén con Ctrl+C o: kill ${pid}\n`)
 	);
+	console.group(c('green', 'Endpoints API REST disponibles:'));
+	[
+		'GET    /notas        - Listar todas las notas',
+		'GET    /notas?tags=X - Filtrar notas por etiqueta',
+		'GET    /notas/:id    - Obtener nota específica',
+		'POST   /notas        - Crear nueva nota',
+		'PUT    /notas/:id    - Reemplazar nota completa',
+		'PATCH  /notas/:id    - Actualizar nota parcialmente',
+		'DELETE /notas/:id    - Eliminar una nota',
+	].forEach(endPoint => console.log(endPoint));
+	console.groupEnd();
+	console.group(c('cyan', 'Esquema de validación:'));
+	[
+		'title:      string (requerido)',
+		'content:    string (requerido)',
+		'tags:       array de strings (opcional, default: [])',
+		'isArchived: boolean (opcional, default: false)',
+		'priority:   "low"|"medium"|"high" (opcional, default: "medium")',
+	].forEach(endPoint => console.log(endPoint));
+	console.groupEnd();
+	console.log(c('gray', `Detén con Ctrl+C o: kill ${pid}\n`));
 });
+

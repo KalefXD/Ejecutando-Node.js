@@ -42,15 +42,14 @@ const filePath = path.resolve(fileArg);
 try {
     // Verificar si se tiene acceso al archivo
 	await fs.access(filePath);
-} catch (err) {
+} catch {
     // Crearlo vacío si el archivo no existe
-    console.log(c('cyan', 'El archivo no existe, se creará uno nuevo.'));
+    console.log(c('cyan', 'El archivo no existe, se creará uno nuevo...'));
 
-    await fs.writeFile(filePath, '')
-        .catch(err => {
-            console.error(c('red', 'Error al crear el archivo:'), err);
-            exit(1);
-        });
+    await fs.writeFile(filePath, '').catch(err => {
+        console.error(c('red', 'Error al crear el archivo:'), err.message);
+        exit(1);
+    });
 
 	// Mostrar mensaje de éxito con el nombre del archivo creado
 	console.log(c('green', 'Archivo creado:'), c('yellow', path.basename(filePath)));
@@ -59,9 +58,9 @@ try {
 // Añadir el texto proporcionado al final del archivo
 await fs.appendFile(filePath, textArg + '\n')
 	.then(console.log(c('cyan', 'Texto añadido a:'), c('yellow', filePath)))
-	.catch(err => console.error(c('red', 'Error al escribir en el archivo:'), err));
+	.catch(err => console.error(c('red', 'Error al escribir en el archivo:'), err.message));
 
 // Leer y mostrar el contenido completo del archivo
 fs.readFile(filePath, 'utf8')
 	.then(data => console.log(c('magenta', 'Contenido del archivo:'), '\n' + data))
-	.catch(err => console.error(c('red', 'Error al leer el archivo:'), err));
+	.catch(err => console.error(c('red', 'Error al leer el archivo:'), err.message));

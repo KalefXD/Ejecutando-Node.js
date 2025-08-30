@@ -30,8 +30,8 @@ fs.readdir(folder)
 			exit(0);
 		}
 
-		// Calcular el ancho máximo de los nombres para alinear la salida en la consola
-		const maxLength = files.reduce((max, str) => Math.max(max, str.length), 0);
+		// Encontrar el ancho máximo de los nombres para alinear la salida en la consola
+		const maxLength = Math.max(...files.map(f => f.length));
 
 		for (const file of files) {
 			// Unir la ruta del directorio con el nombre del archivo
@@ -41,13 +41,13 @@ fs.readdir(folder)
 			let stats;
 			try {
 				stats = await fs.stat(fullPath);
-			} catch (err) {
+			} catch {
 				// Mostrar error y continuar con el siguiente si no se puede acceder al archivo
 				console.log(
 					c('red', 'E'),
 					c('cyan', file.padEnd(maxLength)),
 					c('red', 'ERROR'.padStart(12)),
-					c('red', 'No se pudo acceder al archivo')
+					c('red', 'Acceso denegado')
 				);
 				continue;
 			}
@@ -70,7 +70,7 @@ fs.readdir(folder)
 		console.groupEnd();
 	})
 	.catch(err => {
-		console.error(c('red', 'Error al leer el directorio:'), err);
+		console.error(c('red', 'Error al leer el directorio:'), err.message);
 		exit(1);
 	});
 
