@@ -1,27 +1,40 @@
-// Importación de módulos nativos de Node.js
+/**
+ * Primer contacto con Node.js.
+ *
+ * En este script se usan módulos nativos para mostrar información básica
+ * del sistema operativo y de la red, además de un saludo inicial en consola.
+ * La idea es que el lector vea primero el resultado y después entienda
+ * cómo está construido.
+ */
+
+// Importando módulos nativos de Node.js
 import os from 'node:os';
 import { styleText as c } from 'node:util'; // Función para estilizar texto en la consola
 
-/** Nota:
- * El módulo `node:os` permite obtener información y utilidades relacionadas con el sistema operativo en el que se ejecuta Node.js.
- * El módulo `node:util` proporciona funciones de depuración, formateo y otras utilidades internas de soporte para el desarrollo.
- * Los módulos nativos son parte del núcleo de Node.js y no requieren instalación adicional.
- * El prefijo `node:` indica que son módulos nativos de Node.js, lo que mejora la claridad y evita conflictos con módulos de terceros.
+/**
+ * Apuntes:
+ * Los módulos nativos de Node.js forman parte de su núcleo, por lo que no requieren instalación adicional.
+ * `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
+ * `node:util` proporciona utilidades internas de soporte para el desarrollo.
+ *
+ * El prefijo `node:` indica que el módulo forma parte del núcleo de Node.js,
+ * lo que ayuda a evitar confusiones con paquetes de terceros.
  */
 
-// Mostrar mensaje de bienvenida en la consola
+// Mostrando mensaje de bienvenida en la consola
 global.console.log(
 	c('yellow', '¡Hola mundo!'),
 	`Bienvenido a ${c('green', 'Node.js')}, un entorno de ejecución de JavaScript del lado del servidor.`,
 );
 
-/** Nota:
- * `global` (similar a `window` en el navegador) es el objeto global en Node.js, que contiene todas las variables y funciones globales.
- * `globalThis` es una referencia al objeto global en cualquier entorno de JavaScript, permitiendo escribir código multiplataforma.
+/**
+ * Apunte:
+ * `global (similar a `window` en el navegador) es el objeto global en Node.js,
+ * y `globalThis` hace referencia al objeto global en cualquier entorno de JavaScript.
  * Por lo tanto, `global` y `globalThis` apuntan al mismo objeto global en Node.js.
  */
 
-// Mostrar información general del sistema operativo
+// Mostrando información general del sistema operativo
 console.group(c(['magenta', 'underline'], '\nInformación del SO:'));
 [
 	['Plataforma', os.platform()],
@@ -39,13 +52,13 @@ console.group(c(['magenta', 'underline'], '\nInformación del SO:'));
 ].forEach(([label, val]) => console.log(c('cyan', label + ':'), String(val)));
 console.groupEnd();
 
-/** Nota:
- * `os.cpus()` devuelve un arreglo con información sobre cada núcleo de CPU del sistema.
- * Esto permite optimizar tareas dividiéndolas entre varios núcleos y mejorar el rendimiento.
- * `os.uptime()` devuelve el tiempo (en segundos) que lleva encendido el sistema desde su último reinicio, útil para monitoreo o diagnósticos.
+/**
+ * Apunte:
+ * `os.cpus()` devuelve un arreglo con información de cada núcleo disponible.
+ * Esto permite conocer la capacidad del sistema para ejecutar tareas en paralelo.
  */
 
-// Mostrar información sobre las interfaces de red y direcciones IP
+// Mostrando información de las interfaces de red con sus direcciones IP y tipos de conexiones 
 console.group(c(['magenta', 'underline'], '\nInformación de red:'));
 Object.entries(os.networkInterfaces()).forEach(([name, interfaces]) => {
 	console.group(c('cyan', 'Interfaz:'), c('yellow', name));
@@ -58,8 +71,14 @@ Object.entries(os.networkInterfaces()).forEach(([name, interfaces]) => {
 });
 console.groupEnd();
 
-/** Nota:
- * `os.networkInterfaces()` devuelve todas las interfaces de red con sus respectivas direcciones IP (IPv4 o IPv6).
- * Esto permite identificar direcciones internas (solo accesibles en la red local) y externas (accesibles desde Internet).
- * Las IP internas suelen usar rangos como 192.168.x.x o 10.x.x.x, mientras que las externas son asignadas por el proveedor de servicios de Internet (ISP).
+/**
+ * Apuntes:
+ * `os.networkInterfaces()` devuelve un objeto con todas las interfaces de red disponibles.
+ * Cada interfaz puede incluir varias direcciones, por ejemplo IPv4 e IPv6.
+ *
+ * Una IP interna suele usarse dentro de la red local.
+ * Una IP externa es la que normalmente identifica la conexión hacia fuera.
+ * 
+ * Las IP internas suelen usar rangos como 192.168.x.x o 10.x.x.x,
+ * mientras que las externas son asignadas por el proveedor de servicios de Internet (ISP).
  */
