@@ -3,8 +3,7 @@
  *
  * En este script se usan módulos nativos para mostrar información básica
  * del sistema operativo y de la red, además de un saludo inicial en consola.
- * La idea es que el lector vea primero el resultado y después entienda
- * cómo está construido.
+ * La idea es que el lector vea primero el resultado y después entienda cómo está construido.
  */
 
 // Importando módulos nativos de Node.js
@@ -14,8 +13,8 @@ import { styleText as c } from 'node:util'; // Función para estilizar texto en 
 /**
  * Apuntes:
  * Los módulos nativos de Node.js forman parte de su núcleo, por lo que no requieren instalación adicional.
- * `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
- * `node:util` proporciona utilidades internas de soporte para el desarrollo.
+ * El módulo `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
+ * El módulo `node:util` proporciona utilidades internas de soporte para el desarrollo.
  *
  * El prefijo `node:` indica que el módulo forma parte del núcleo de Node.js,
  * lo que ayuda a evitar confusiones con paquetes de terceros.
@@ -28,8 +27,8 @@ global.console.log(
 );
 
 /**
- * Apunte:
- * `global (similar a `window` en el navegador) es el objeto global en Node.js,
+ * Apuntes:
+ * `global` (similar a `window` en el navegador) es el objeto global en Node.js,
  * y `globalThis` hace referencia al objeto global en cualquier entorno de JavaScript.
  * Por lo tanto, `global` y `globalThis` apuntan al mismo objeto global en Node.js.
  */
@@ -53,7 +52,7 @@ console.group(c(['magenta', 'underline'], '\nInformación del SO:'));
 console.groupEnd();
 
 /**
- * Apunte:
+ * Apuntes:
  * `os.cpus()` devuelve un arreglo con información de cada núcleo disponible.
  * Esto permite conocer la capacidad del sistema para ejecutar tareas en paralelo.
  */
