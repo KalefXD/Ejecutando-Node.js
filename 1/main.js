@@ -3,7 +3,8 @@
  *
  * En este script se usan módulos nativos para mostrar información básica
  * del sistema operativo y de la red, además de un saludo inicial en consola.
- * La idea es que el lector vea primero el resultado y después entienda cómo está construido.
+ * El lector verá cómo importar módulos nativos, consultar propiedades del sistema
+ * y recorrer interfaces de red, antes de profundizar en el código.
  */
 
 // Importando módulos nativos de Node.js
@@ -14,10 +15,10 @@ import { styleText as c } from 'node:util'; // Función para estilizar texto en 
  * Apuntes:
  * Los módulos nativos de Node.js forman parte de su núcleo, por lo que no requieren instalación adicional.
  * El módulo `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
- * El módulo `node:util` proporciona utilidades internas de soporte para el desarrollo.
+ * El módulo `node:util` ofrece utilidades generales para el desarrollo, como formateo de texto y depuración.
  *
  * El prefijo `node:` indica que el módulo forma parte del núcleo de Node.js,
- * lo que ayuda a evitar confusiones con paquetes de terceros.
+ * lo que ayuda a evitar confusiones con paquetes de terceros que tengan el mismo nombre.
  */
 
 // Mostrando mensaje de bienvenida en la consola
@@ -28,9 +29,12 @@ global.console.log(
 
 /**
  * Apuntes:
- * `global` (similar a `window` en el navegador) es el objeto global en Node.js,
- * y `globalThis` hace referencia al objeto global en cualquier entorno de JavaScript.
- * Por lo tanto, `global` y `globalThis` apuntan al mismo objeto global en Node.js.
+ * En Node.js, el objeto global equivale a `window` en el navegador: contiene las variables
+ * y funciones disponibles en cualquier parte del código sin necesidad de importarlas.
+ * Se puede acceder a él con `global`, que es exclusivo de Node.js,
+ * o con `globalThis`, que es estándar de JavaScript y funciona en cualquier entorno.
+ * Ambos apuntan al mismo objeto, pero `globalThis` es preferible cuando se escribe
+ * código pensado para ser portable entre entornos.
  */
 
 // Mostrando información general del sistema operativo
@@ -53,11 +57,11 @@ console.groupEnd();
 
 /**
  * Apuntes:
- * `os.cpus()` devuelve un arreglo con información de cada núcleo disponible.
+ * `os.cpus()` devuelve un arreglo con información de cada núcleo del procesador.
  * Esto permite conocer la capacidad del sistema para ejecutar tareas en paralelo.
  */
 
-// Mostrando información de las interfaces de red con sus direcciones IP y tipos de conexiones 
+// Mostrando información de las interfaces de red con sus direcciones IP y tipos de conexiones
 console.group(c(['magenta', 'underline'], '\nInformación de red:'));
 Object.entries(os.networkInterfaces()).forEach(([name, interfaces]) => {
 	console.group(c('cyan', 'Interfaz:'), c('yellow', name));
@@ -73,11 +77,9 @@ console.groupEnd();
 /**
  * Apuntes:
  * `os.networkInterfaces()` devuelve un objeto con todas las interfaces de red disponibles.
- * Cada interfaz puede incluir varias direcciones, por ejemplo IPv4 e IPv6.
+ * Cada interfaz puede tener varias direcciones, por ejemplo una IPv4 y una IPv6.
  *
- * Una IP interna suele usarse dentro de la red local.
- * Una IP externa es la que normalmente identifica la conexión hacia fuera.
- * 
- * Las IP internas suelen usar rangos como 192.168.x.x o 10.x.x.x,
- * mientras que las externas son asignadas por el proveedor de servicios de Internet (ISP).
+ * Las direcciones internas se usan dentro de la red local del equipo.
+ * Las externas son las que identifican la conexión hacia Internet y son asignadas por el ISP.
+ * Los rangos más comunes para direcciones internas son 192.168.x.x y 10.x.x.x.
  */

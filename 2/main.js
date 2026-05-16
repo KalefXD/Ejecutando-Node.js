@@ -1,10 +1,10 @@
 /**
  * Añadir texto al final de un archivo usando promesas.
  *
- * En este script se leen los argumentos de la línea de comandos, se valida
- * que existan los datos necesarios, se resuelve la ruta del archivo, se crea
- * si no existe, se añade texto con `.then()` y `.catch()`, y al final se muestra
- * el contenido completo del archivo.
+ * En este script se trabaja con el sistema de archivos de Node.js a través de `fs/promises`,
+ * se leen argumentos desde la línea de comandos y se encadenan promesas con `.then()` y `.catch()`.
+ * El flujo muestra cómo verificar si un archivo existe, crearlo si no, añadirle contenido
+ * y leerlo al final para confirmar el resultado.
  */
 
 import { argv, exit } from 'node:process';
@@ -16,11 +16,11 @@ import { styleText as c } from 'node:util';
  * Apuntes:
  * El módulo `node:process` permite acceder a información y controlar el proceso en ejecución.
  * El módulo `node:path` proporciona utilidades para trabajar con rutas de archivos y directorios de forma multiplataforma.
- * El submódulo `node:fs/promises` permite interactuar con el sistema de archivos utilizando promesas en lugar de callbacks.
- * 
- * Node.js añade nuevos objetos globales que no existen en los navegadores, y uno de ellos es `process`.
- * `process` también puede importarse desde `node:process`, pero no es necesario en la mayoría de los casos.
- * Por eso, en los siguientes scripts de este repositorio no se utilizará `node:process`.
+ * El submódulo `node:fs/promises` permite interactuar con el sistema de archivos usando promesas en lugar de callbacks.
+ *
+ * Node.js expone `process` como un objeto global, por lo que no necesita importarse explícitamente.
+ * En este script se importa desde `node:process` para dejar claro de dónde proviene,
+ * pero en los siguientes scripts del repositorio se usará directamente como global, sin importación.
  */
 
 // Extrayendo argumentos de la línea de comandos
@@ -49,9 +49,10 @@ if (!fileArg || !textArg) {
 
 /**
  * Apuntes:
- * `exit()` termina el proceso de forma inmediata y permite especificar un código de salida.
- * `exit(0)` indica que todo terminó correctamente, mientras que `exit(1)` indica un error.
- * Por defecto, el código de salida es 0, pero esto se puede cambiar con `exitCode` de `node:process`.
+ * `exit()` termina el proceso de forma inmediata y acepta un código de salida como argumento.
+ * `exit(0)` indica que todo terminó correctamente, mientras que `exit(1)` señala un error.
+ * Si se necesita establecer el código de salida sin detener el proceso de inmediato,
+ * se puede usar la propiedad `process.exitCode`, que se aplica cuando el proceso termina de forma natural.
  */
 
 // Convirtiendo la ruta del archivo a una ruta absoluta
@@ -60,14 +61,14 @@ const filePath = path.resolve(fileArg);
 /**
  * Apuntes:
  * `path.resolve()` convierte una ruta relativa en una ruta absoluta.
- * Esto facilita trabajar con archivos sin depender de la carpeta actual del usuario.
+ * Esto evita depender del directorio desde el que se ejecuta el script.
  */
 
 try {
 	// Verificando si se tiene acceso al archivo
 	await fs.access(filePath);
 } catch {
-    // Creando un archivo vacío si el archivo no existe
+	// Creando un archivo vacío si el archivo no existe
 	console.log(c('cyan', 'El archivo no existe, se creará uno nuevo...'));
 
 	try {
@@ -86,9 +87,9 @@ await fs.appendFile(filePath, textArg + '\n')
 
 /**
  * Apuntes:
- * En `.then()` se ejecuta el código cuando la promesa se resuelve correctamente.
- * En `.catch()` se maneja el error si la operación falla.
- * También existe el método `.finally()` que se ejecuta independientemente del resultado de la promesa.
+ * `.then()` recibe una función que se ejecuta cuando la promesa se resuelve correctamente.
+ * `.catch()` recibe una función que se ejecuta si la promesa falla.
+ * También existe `.finally()`, que se ejecuta siempre al terminar, independientemente del resultado.
  */
 
 // Leyendo y mostrando el contenido completo del archivo
