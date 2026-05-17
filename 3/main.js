@@ -16,16 +16,6 @@ import { styleText as c } from 'node:util';
 // Definiendo la carpeta a listar (directorio actual por defecto)
 const folder = process.argv[2] ?? '.';
 
-/**
- * Apuntes:
- * `process.argv` es un arreglo con los argumentos de la línea de comandos.
- * Los primeros dos elementos son la ruta de Node.js y la del script actual.
- * El índice 2 en adelante contiene los argumentos del usuario.
- *
- * `process` es un objeto global exclusivo de Node.js que no existe en los navegadores.
- * No necesita importarse; está disponible en cualquier parte del código.
- */
-
 // Mostrando mensaje de uso si no se pasa un argumento
 if (!process.argv[2]) console.log(
 	c('red', 'Uso: node main.js <carpeta>'),

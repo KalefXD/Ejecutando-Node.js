@@ -17,10 +17,6 @@ import { styleText as c } from 'node:util';
  * El módulo `node:process` permite acceder a información y controlar el proceso en ejecución.
  * El módulo `node:path` proporciona utilidades para trabajar con rutas de archivos y directorios de forma multiplataforma.
  * El submódulo `node:fs/promises` permite interactuar con el sistema de archivos usando promesas en lugar de callbacks.
- *
- * Node.js expone `process` como un objeto global, por lo que no necesita importarse explícitamente.
- * En este script se importa desde `node:process` para dejar claro de dónde proviene,
- * pero en los siguientes scripts del repositorio se usará directamente como global, sin importación.
  */
 
 // Extrayendo argumentos de la línea de comandos
@@ -31,6 +27,10 @@ const [,, fileArg, textArg] = argv;
  * `argv` contiene los argumentos pasados al ejecutar el script desde la línea de comandos.
  * El índice 0 es la ruta del ejecutable de Node.js y el índice 1 es la ruta del script actual.
  * A partir del índice 2 se encuentran los argumentos personalizados que proporciona el usuario.
+ * 
+ * `process` es un objeto global exclusivo de Node.js: no existe en los navegadores y no necesita importarse.
+ * En este script se importa `argv` y `exit` desde `node:process` para dejar claro de dónde proviene,
+ * pero en los siguientes scripts del repositorio se usará directamente como global, sin importación.
  *
  * Existe un método de `node:util` llamado `parseArgs` que permite manejar los argumentos de forma más estructurada.
  * En este ejemplo no se usa para mantener el script más simple.
