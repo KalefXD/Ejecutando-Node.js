@@ -29,8 +29,8 @@ const [,, fileArg, textArg] = argv;
  * A partir del índice 2 se encuentran los argumentos personalizados que proporciona el usuario.
  * 
  * `process` es un objeto global exclusivo de Node.js: no existe en los navegadores y no necesita importarse.
- * En este script se importa `argv` y `exit` desde `node:process` para dejar claro de dónde proviene,
- * pero en los siguientes scripts del repositorio se usará directamente como global, sin importación.
+ * En este script se importa explícitamente desde `node:process` para dejar claro su origen,
+ * pero como es global, en los siguientes scripts del repositorio se usará directamente, sin importación.
  *
  * Existe un método de `node:util` llamado `parseArgs` que permite manejar los argumentos de forma más estructurada.
  * En este ejemplo no se usa para mantener el script más simple.

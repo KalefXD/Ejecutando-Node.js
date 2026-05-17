@@ -4,18 +4,19 @@
  * En este script se usan módulos nativos para mostrar información básica
  * del sistema operativo y de la red, además de un saludo inicial en consola.
  * El lector verá cómo importar módulos nativos, consultar propiedades del sistema
- * y recorrer interfaces de red, antes de profundizar en el código.
+ * y recorrer interfaces de red.
  */
 
 // Importando módulos nativos de Node.js
 import os from 'node:os';
-import { styleText as c } from 'node:util'; // Función para estilizar texto en la consola
+import { styleText as c } from 'node:util';
 
 /**
  * Apuntes:
  * Los módulos nativos de Node.js forman parte de su núcleo, por lo que no requieren instalación adicional.
  * El módulo `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
- * El módulo `node:util` ofrece utilidades generales para el desarrollo, como formateo de texto y depuración.
+ * El módulo `node:util` ofrece diversas utilidades para el desarrollo; aquí se usa `styleText`,
+ * que aplica estilos ANSI al texto de la consola (colores, subrayado, negrita, etc.).
  *
  * El prefijo `node:` indica que el módulo forma parte del núcleo de Node.js,
  * lo que ayuda a evitar confusiones con paquetes de terceros que tengan el mismo nombre.
@@ -79,7 +80,8 @@ console.groupEnd();
  * `os.networkInterfaces()` devuelve un objeto con todas las interfaces de red disponibles.
  * Cada interfaz puede tener varias direcciones, por ejemplo una IPv4 y una IPv6.
  *
- * Las direcciones internas se usan dentro de la red local del equipo.
- * Las externas son las que identifican la conexión hacia Internet y son asignadas por el ISP.
- * Los rangos más comunes para direcciones internas son 192.168.x.x y 10.x.x.x.
+ * La propiedad `internal` indica si la dirección pertenece a una interfaz de loopback,
+ * como `127.0.0.1` (IPv4) o `::1` (IPv6), que el sistema usa para comunicarse consigo mismo.
+ * Una dirección con `internal: false` puede ser tanto una IP privada de red local (como 192.168.x.x)
+ * como una IP pública; Node.js no hace esa distinción aquí.
  */
