@@ -3,8 +3,10 @@
  *
  * En este script se lee un directorio con `fs.readdir()`, se recorren sus entradas
  * y se consultan los metadatos de cada una con `fs.stat()`.
- * El lector verá cómo trabajar con rutas, manejar errores por entrada
- * y formatear una salida tabular en la consola.
+ * A diferencia del script anterior, los errores se manejan entrada por entrada,
+ * lo que permite continuar listando aunque algún archivo no sea accesible.
+ * El lector verá cómo usar `async/await` dentro de una cadena de promesas,
+ * inspeccionar metadatos del sistema de archivos y construir una salida tabular en consola.
  */
 
 import path from 'node:path';
@@ -35,6 +37,18 @@ if (!process.argv[2]) console.log(
 // Leyendo el contenido del directorio
 fs.readdir(folder)
 	.then(async files => {
+
+		/**
+		 * Apuntes:
+		 * Se usa una función `async` dentro de `.then()` para poder usar `await` con `fs.stat()`.
+		 *
+		 * Marcar la función como `async` hace que retorne automáticamente una Promise.
+		 * Eso significa que si algo interno lanza un error, se propaga hacia el `.catch()` al final de la cadena.
+		 *
+		 * Sin `async`, el `await` no sería válido sintácticamente, y cualquier error asíncrono interno
+		 * quedaría "flotando" desconectado de la cadena de promesas, y el `.catch()` nunca se enteraría de él.
+		 */
+
 		// Mostrando encabezado con la ruta absoluta del directorio
 		console.group(
 			c('magenta', 'Contenido del directorio:'),
@@ -82,7 +96,9 @@ fs.readdir(folder)
 			 * tipo, tamaño, fechas de creación y modificación, permisos, entre otros.
 			 * El objeto incluye métodos como `isFile()` e `isDirectory()` para identificar el tipo.
 			 *
-			 * Además de archivos y directorios, existen tipos especiales como enlaces simbólicos o sockets.
+			 * El error se captura aquí dentro del bucle, no fuera, para que un archivo inaccesible
+			 * no interrumpa el listado completo; el script simplemente lo marca y sigue adelante.
+			 *
 			 * Si se necesita consultar los metadatos de un enlace simbólico en lugar del archivo al que apunta,
 			 * se usa `fs.lstat()`.
 			 */
