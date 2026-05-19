@@ -37,15 +37,13 @@ const z = await import('zod')
  * Este script utiliza una dependencia externa: `zod`. Las dependencias son paquetes
  * de código de terceros que se gestionan con `npm` y se listan en un archivo `package.json`.
  * La dependencia `zod` sirve para validar y tipar datos de forma segura en JavaScript/TypeScript.
- * Trabajar con Node.js a menudo implica usar código de terceros para evitar reinventar la rueda
- * y aprovechar soluciones ya existentes.
  *
- * Se recomienda leer la documentación de cada dependencia para entender su propósito, cómo usarla
- * y sus limitaciones, ya que no habrá apuntes detallados sobre cada una de sus características,
- * sino ejemplos prácticos de su uso.
+ * Se recomienda leer la documentación de cada dependencia que aparezca en este repositorio para entender su propósito,
+ * cómo usarla y sus limitaciones, ya que no habrá apuntes detallados sobre cada una de ellas en los scripts siguientes,
+ * sino solo las partes relevantes para los scripts de este repositorio, y en algunos casos ni siquiera eso.
  *
  * La verificación de instalación con `await import()` es un recurso didáctico, no una práctica común.
- * En proyectos reales, se asume que las dependencias ya fueron instaladas con `npm install`.
+ * En proyectos reales, se asume que las dependencias del `package.json` ya fueron instaladas con `npm install`.
  * A partir de ahora, deberás instalarlas por tu cuenta antes de ejecutar los scripts siguientes.
  */
 

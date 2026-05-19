@@ -16,7 +16,9 @@ import { styleText as c } from 'node:util';
  * Apuntes:
  * El módulo `node:process` permite acceder a información y controlar el proceso en ejecución.
  * El módulo `node:path` proporciona utilidades para trabajar con rutas de archivos y directorios de forma multiplataforma.
- * El submódulo `node:fs/promises` permite interactuar con el sistema de archivos usando promesas en lugar de callbacks.
+ * El módulo `node:fs` permite interactuar con el sistema de archivos mediante callbacks,
+ * mientras que `node:fs/promises` es su interfaz basada en promesas,
+ * lo que facilita el manejo de operaciones asíncronas sin anidar callbacks.
  */
 
 // Extrayendo argumentos de la línea de comandos
@@ -30,7 +32,7 @@ const [,, fileArg, textArg] = argv;
  * 
  * `process` es un objeto global exclusivo de Node.js: no existe en los navegadores y no necesita importarse.
  * En este script se importa explícitamente desde `node:process` para dejar claro su origen,
- * pero como es global, en los siguientes scripts del repositorio se usará directamente, sin importación.
+ * pero al ser un objeto global de Node.js, los scripts siguientes lo usarán directamente sin necesidad de importarlo.
  *
  * Existe un método de `node:util` llamado `parseArgs` que permite manejar los argumentos de forma más estructurada.
  * En este ejemplo no se usa para mantener el script más simple.
@@ -60,8 +62,9 @@ const filePath = path.resolve(fileArg);
 
 /**
  * Apuntes:
- * `path.resolve()` convierte una ruta relativa en una ruta absoluta.
- * Esto evita depender del directorio desde el que se ejecuta el script.
+ * `path.resolve()` convierte una ruta relativa en una ruta absoluta tomando como referencia
+ * el directorio de trabajo actual (`process.cwd()`). Esto evita comportamientos inesperados
+ * cuando el script se ejecuta desde un directorio distinto al que contiene el archivo.
  */
 
 try {

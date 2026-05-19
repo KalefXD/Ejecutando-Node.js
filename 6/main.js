@@ -11,24 +11,26 @@ import {
 	eliminarNota
 } from './notas.js';
 
-/** Nota:
+/**
+ * Apuntes:
  * Este script implementa una API REST (Representational State Transfer) usando únicamente módulos nativos de Node.js.
  * REST es un estilo arquitectónico que utiliza métodos HTTP estándar (GET, POST, PUT, PATCH, DELETE) para operaciones CRUD.
  * Una API REST permite que diferentes aplicaciones se comuniquen de manera estandarizada a través de HTTP.
  * CRUD significa Create (crear), Read (leer), Update (actualizar), Delete (eliminar).
  */
 
-// Obtener nombre y directorio del archivo actual
+// Obteniendo nombre y directorio del archivo actual
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/** Nota:
+/**
+ * Apuntes:
  * En ES modules, no tenemos acceso directo a __filename y __dirname como en CommonJS.
  * `import.meta.url` devuelve la URL del módulo actual (ej: file:///path/to/file.js).
  * `fileURLToPath()` convierte esa URL del archivo a una ruta del sistema de archivos.
  */
 
-// Cargar variables de entorno desde un archivo .env
+// Cargando variables de entorno desde un archivo .env
 process.loadEnvFile(path.join(__dirname, '.env'));
 const PORT = process.env.PORT ?? 0;
 const HOST = process.env.HOST ?? 'localhost';
@@ -37,26 +39,26 @@ const HOST = process.env.HOST ?? 'localhost';
 function parseJsonData(req) {
 	return new Promise((resolve, reject) => {
 		let body = '';
-		// Limitar el cuerpo a 1MB para prevenir ataques DoS
+		// Limitando el cuerpo a 1MB para prevenir ataques DoS
 		const maxSize = 1024 * 1024;
 
-		// Verificar que el Content-Type sea application/json
+		// Verificando que el Content-Type sea application/json
 		if (!req.headers['content-type']?.includes('application/json')) {
 			return reject(new Error('Content-Type debe ser application/json.'));
 		}
 
-		// Manejar los fragmentos de datos cuando llegen
+		// Manejando los fragmentos de datos cuando llegen
 		req.on('data', chunk => {
-			// Detener la conexión si se excede el límite de tamaño
+			// Deteniendo la conexión si se excede el límite de tamaño
 			if (body.length > maxSize) {
 				req.socket.destroy();
 				return reject(new Error('Tamaño máximo de datos excedido (1MB)'));
 			}
-			// Acumular los fragmentos de datos
+			// Acumulando los fragmentos de datos
 			body += chunk.toString('utf8');
 		});
 
-		// Manejar el final de la transmisión de datos
+		// Manejando el final de la transmisión de datos
 		req.on('end', () => {
 			try {
 				// Intentar parsear el JSON acumulado
@@ -71,7 +73,7 @@ function parseJsonData(req) {
 	});
 }
 
-// Crear el servidor HTTP para la API de Notas
+// Creando el servidor HTTP para la API de Notas
 const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
 
@@ -84,19 +86,20 @@ const server = http.createServer(async (req, res) => {
 		c('cyan', url)
 	);
 
-	// Configurar headers CORS para permitir peticiones desde el navegador
+	// Configurando headers CORS para permitir peticiones desde el navegador
     res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 	
-	/** Nota:
+	/**
+	 * Apuntes:
 	 * CORS (Cross-Origin Resource Sharing) permite que aplicaciones web en un dominio accedan a recursos de otro dominio.
 	 * Sin CORS, los navegadores bloquean peticiones entre diferentes orígenes por seguridad (Same-Origin Policy).
 	 * Las peticiones OPTIONS son "preflight requests" que los navegadores envían automáticamente para verificar permisos.
 	 * En producción, es recomendable especificar orígenes específicos en lugar de '*' para mayor seguridad.
 	 */
 
-	// Responder rápidamente a las solicitudes OPTIONS (preflight requests)
+	// Respondiendo rápidamente a las solicitudes OPTIONS (preflight requests)
 	if (method === 'OPTIONS') {
 		res.writeHead(204); // 204 No Content es el estatus correcto para preflight
 		return res.end();
@@ -108,14 +111,14 @@ const server = http.createServer(async (req, res) => {
 		res.end(data !== null ? JSON.stringify(data) : '');
 	};
 
-	// Parsear la URL para extraer la ruta y parámetros
+	// Parseando la URL para extraer la ruta y parámetros
 	const urlPath = decodeURIComponent(url.split('?')[0]);
 	const partes = urlPath.split('/').filter(Boolean);
 	const resource = partes[0];
 	const id = partes[1];
 
 	try {
-		// Enrutar las peticiones según el recurso solicitado
+		// Enrutando las peticiones según el recurso solicitado
 		if (resource === 'notas') {
 			// GET /notas - Obtener todas las notas
 			if (method === 'GET' && !id) {

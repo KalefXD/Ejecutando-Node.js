@@ -36,7 +36,7 @@ fs.readdir(folder)
 		 * Eso significa que si algo interno lanza un error, se propaga hacia el `.catch()` al final de la cadena.
 		 *
 		 * Sin `async`, el `await` no sería válido sintácticamente, y cualquier error asíncrono interno
-		 * quedaría "flotando" desconectado de la cadena de promesas, y el `.catch()` nunca se enteraría de él.
+		 * quedaría fuera de la cadena de promesas, y el `.catch()` nunca lo capturaría.
 		 */
 
 		// Mostrando encabezado con la ruta absoluta del directorio

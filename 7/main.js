@@ -11,7 +11,8 @@ import {
 	updateNoteSchemaPartial
 } from './notas.schema.js'; // Importa los esquemas de validación
 
-/** Nota:
+/**
+ * Apuntes:
  * La dependencia `express` permite crear y gestionar servidores web de forma sencilla y eficiente.
  * La dependencia `cors` permite habilitar y controlar el acceso de recursos entre distintos orígenes en una API o servidor.
  */
@@ -22,13 +23,13 @@ const __dirname = path.dirname(__filename);
 const PORT = env.PORT ?? 3000;
 const HOST = env.HOST ?? 'localhost';
 
-// Crear la instancia principal de Express
+// Creando la instancia principal de Express
 const app = express();
 
-// Simular una base de datos en memoria usando un array (solo para demostración)
+// Simulando una base de datos en memoria usando un array (solo para demostración)
 const notas = [];
 
-// Desactivar el header X-Powered-By para mayor seguridad
+// Desactivando el header X-Powered-By para mayor seguridad
 app.disable('x-powered-by');
 
 // Middleware para habilitar CORS (Cross-Origin Resource Sharing)
@@ -37,7 +38,8 @@ app.use(cors());
 // Middleware para parsear automáticamente el cuerpo de las peticiones como JSON
 app.use(express.json());
 
-/** Nota:
+/**
+ * Apuntes:
  * El header "X-Powered-By: Express" revela información sobre la tecnología usada.
  * Los atacantes pueden usar esta información para exploits específicos de Express.
  * Es una buena práctica de seguridad ocultar detalles de implementación.
@@ -47,7 +49,7 @@ app.use(express.json());
 app.get('/notas', (req, res) => {
 	const { tags } = req.query;
 
-	// Aplicar filtro por etiquetas si se especifica una
+	// Aplicando filtro por etiquetas si se especifica una
 	if (tags) {
 		const notasFiltradas = notas.filter(
 			nota => nota.tags && nota.tags.some(tag =>
@@ -57,7 +59,7 @@ app.get('/notas', (req, res) => {
 		return res.json(notasFiltradas);
 	}
 
-	// Si no hay filtros, devolver todas las notas
+	// Devolviendo todas las notas si no hay filtros
 	res.json(notas);
 });
 
@@ -71,7 +73,7 @@ app.get('/notas/:id', (req, res) => {
 
 // Crear nueva nota
 app.post('/notas', (req, res) => {
-	// Validar los datos recibidos usando el esquema Zod
+	// Validando los datos recibidos usando el esquema Zod
 	const result = createNoteSchema.safeParse(req.body);
 
 	if (!result.success) {
@@ -82,7 +84,7 @@ app.post('/notas', (req, res) => {
 		});
 	}
 
-	// Crear nueva nota con los datos validados y metadatos automáticos
+	// Creando nueva nota con los datos validados y metadatos automáticos
 	const nuevaNota = {
 		id: crypto.randomUUID(),
 		createdAt: new Date(),
@@ -90,26 +92,26 @@ app.post('/notas', (req, res) => {
 		...result.data // Spread de los datos validados
 	};
 
-	// Agregar a la "base de datos" en memoria
+	// Agregando a la "base de datos" en memoria
 	notas.push(nuevaNota);
 
-	// Responder con estatus 201 (Created) y la nota creada
+	// Respondiendo con estatus 201 (Created) y la nota creada
 	res.status(201).json(nuevaNota);
 })
 
 // Reemplazar completamente una nota
 app.put('/notas/:id', async (req, res) => {
-	// Buscar la nota existente
+	// Buscando la nota existente
 	const nota = notas.find(n => n.id === req.params.id);
 	if (!nota) {
 		return res.status(404).json({ error: 'Nota no encontrada' });
 	}
 
-	// Prevenir modificación de campos protegidos
+	// Preveniendo modificación de campos protegidos
 	delete req.body.id;
 	delete req.body.createdAt;
 
-	// Validar los nuevos datos
+	// Validando los nuevos datos
 	const result = updateNoteSchema.safeParse(req.body);
 	if (!result.success) {
 		return res.status(400).json({ 
@@ -118,7 +120,7 @@ app.put('/notas/:id', async (req, res) => {
 		});
 	}
 
-	// Reemplazar todos los campos manteniendo metadatos protegidos
+	// Reemplazando todos los campos manteniendo metadatos protegidos
 	Object.assign(nota, {
 		...result.data,
 		id: nota.id, // Mantener ID original
@@ -131,17 +133,17 @@ app.put('/notas/:id', async (req, res) => {
 
 // Actualizar parcialmente una nota
 app.patch('/notas/:id', (req, res) => {
-	// Buscar la nota existente
+	// Buscando la nota existente
 	const nota = notas.find(n => n.id === req.params.id);
 	if (!nota) {
 		return res.status(404).json({ error: 'Nota no encontrada' });
 	}
 
-	// Prevenir modificación de campos protegidos
+	// Preveniendo modificación de campos protegidos
 	delete req.body.id;
 	delete req.body.createdAt;
 
-	// Validar usando el esquema parcial (todos los campos opcionales)
+	// Validando usando el esquema parcial (todos los campos opcionales)
 	const result = updateNoteSchemaPartial.safeParse(req.body);
 	if (!result.success) {
 		return res.status(400).json({
@@ -150,7 +152,7 @@ app.patch('/notas/:id', (req, res) => {
 		});
 	}
 
-	// Actualizar solo los campos proporcionados
+	// Actualizando solo los campos proporcionados
 	Object.assign(nota, result.data, {
 		updatedAt: new Date() // Siempre actualizar timestamp
 	});
@@ -193,10 +195,10 @@ app.use((req, res) => {
 
 // Middleware global para manejo de errores al final
 app.use((err, req, res, next) => {
-	// Registrar el error para debugging
+	// Registrando el error para debugging
 	console.error('Error no manejado:', err);
 
-	// Responder con error genérico al cliente
+	// Respondiendo con error genérico al cliente
 	res.status(500).json({
 		error: 'Error interno del servidor',
 		mensaje: 'Ocurrió un error inesperado. Por favor intente más tarde.'
@@ -230,4 +232,3 @@ app.listen(PORT, HOST, () => {
 	console.groupEnd();
 	console.log(c('gray', `Detén con Ctrl+C o: kill ${pid}\n`));
 });
-

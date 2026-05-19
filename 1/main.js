@@ -30,12 +30,11 @@ global.console.log(
 
 /**
  * Apuntes:
- * En Node.js, el objeto global equivale a `window` en el navegador: contiene las variables
- * y funciones disponibles en cualquier parte del código sin necesidad de importarlas.
- * Se puede acceder a él con `global`, que es exclusivo de Node.js,
- * o con `globalThis`, que es estándar de JavaScript y funciona en cualquier entorno.
- * Ambos apuntan al mismo objeto, pero `globalThis` es preferible cuando se escribe
- * código pensado para ser portable entre entornos.
+ * `global` (similar a `window` en el navegador) es el objeto global de Node.js,
+ * que contiene todas las variables y funciones globales.
+ * `globalThis` hace referencia al objeto global en cualquier entorno de JavaScript,
+ * permitiendo escribir código multiplataforma.
+ * Por lo tanto, `global` y `globalThis` apuntan al mismo objeto global en Node.js.
  */
 
 // Mostrando información general del sistema operativo

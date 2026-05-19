@@ -4,12 +4,13 @@ import fs from 'node:fs/promises';
 import process from 'node:process';
 import { styleText as c } from 'node:util';
 
-// Configurar servidor HTTP con carpeta pública y variables de entorno
+// Configurando servidor HTTP con carpeta pública y variables de entorno
 const PUBLIC_DIR = path.resolve(process.argv[2] ?? '.');
 const PORT = process.env.PORT ?? 0;
 const HOST = process.env.HOST ?? 'localhost';
 
-/** Nota:
+/**
+ * Apuntes:
  * `process.env` es un objeto que contiene las variables de entorno del proceso actual.
  * Puedes definirlas en la terminal: `PORT=3000 HOST=127.0.0.1 node main.js`.
  * Al asignar el puerto a 0, el sistema operativo elige un puerto libre automáticamente.
@@ -37,17 +38,18 @@ function getMimeType(filePath) {
 	return textTypes.includes(ext) ? mimeType + '; charset=utf-8' : mimeType;
 }
 
-/** Nota:
+/**
+ * Apuntes:
  * Los tipos MIME le indican al navegador cómo interpretar un archivo (ej: `text/html` para una página web).
  * `application/octet-stream` es el tipo genérico para datos binarios, lo que usualmente provoca su descarga.
  * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales se muestren correctamente.
  */
 
-// Crear servidor HTTP
+// Creando servidor HTTP
 const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
 
-	// Registrar la petición en la consola
+	// Registrando la petición en la consola
 	const requestTime = new Date();
 	console.log(
 		c('gray', requestTime.toLocaleTimeString()),
@@ -57,24 +59,24 @@ const server = http.createServer(async (req, res) => {
 		c('cyan', url)
 	);
 
-    // Ignorar query-strings y decodificar la URL
+    // Ignorando query-strings y decodificar la URL
     const urlPath = decodeURIComponent(url.split('?')[0]);
 	let filePath = path.join(PUBLIC_DIR, urlPath);
 
-	// Buscar el archivo index.html si la ruta es un directorio
+	// Buscando el archivo index.html si la ruta es un directorio
 	if (urlPath.endsWith('/')) filePath = path.join(filePath, 'index.html');
 
 	try {
-		// Leer el archivo solicitado
+		// Leyendo el archivo solicitado
 		const data = await fs.readFile(filePath);
 		const mimeType = getMimeType(filePath);
 
-		// Enviar la respuesta con el contenido y el tipo MIME correcto
+		// Enviando la respuesta con el contenido y el tipo MIME correcto
 		res.setHeader('Content-Type', mimeType);
 		res.end(data);
 
 	} catch (err) {
-        // Manejar errores, principalmente si el archivo no existe
+        // Manejando errores, principalmente si el archivo no existe
 		if (err.code === 'ENOENT') {
 			res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
 			res.write('<!DOCTYPE html><h1>404 - Not Found</h1>');
@@ -85,7 +87,7 @@ const server = http.createServer(async (req, res) => {
 		}
 
 	} finally {
-        // Registrar la respuesta y el tiempo de procesamiento
+        // Registrando la respuesta y el tiempo de procesamiento
 		const responseTime = Date.now() - requestTime.getTime();
 		console.log(
 			c('gray', responseTime + 'ms'),
@@ -95,16 +97,17 @@ const server = http.createServer(async (req, res) => {
 	}
 });
 
-/** Nota:
+/**
+ * Apuntes:
  * El módulo `node:http` permite crear y manejar servidores y clientes HTTP.
  * `http.createServer` crea un servidor HTTP y usa un callback con req (request) y res (response) para manejar solicitudes y respuestas.
  * `req` contiene información sobre la petición (método, URL, cabeceras, etc.), y `res` se usa para enviar la respuesta al cliente.
  * Los códigos de estado HTTP (200 OK, 404 Not Found, 500 Error) son parte del protocolo y le indican al cliente el resultado de su solicitud.
  */
 
-// Iniciar el servidor para que escuche peticiones
+// Iniciando el servidor para que escuche peticiones
 server.listen(PORT, HOST, () => {
-	// Mostrar información del servidor al iniciar
+	// Mostrando información del servidor al iniciar
     const { port } = server.address();
 	console.log(
 		c('magenta', '\nServidor HTTP iniciado en:'), c('yellow', `http://${HOST}:${port}`),
@@ -113,7 +116,7 @@ server.listen(PORT, HOST, () => {
 	);
 });
 
-// Manejar el cierre del servidor de forma controlada
+// Manejando el cierre del servidor de forma controlada
 ['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
 	console.log('\nCerrando servidor...');
 	server.close(() => {
@@ -122,7 +125,8 @@ server.listen(PORT, HOST, () => {
 	});
 }));
 
-/** Nota:
+/**
+ * Apuntes:
  * `SIGINT` y `SIGTERM` son señales que el sistema operativo envía a un proceso para solicitar su terminación.
  * La primera es comúnmente enviada por el usuario (Ctrl+C), y la segunda por herramientas de sistema o comandos (kill).
  * Estas señales nos permiten realizar una limpieza (como cerrar el servidor o la base de datos) antes de que el proceso finalice abruptamente.
