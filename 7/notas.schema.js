@@ -1,9 +1,9 @@
 import z from 'zod';
 
-// Traducir los mensajes de errores al español
+// Traduciendo mensajes de errores al español
 z.config(z.locales.es());
 
-// Esquema base que define la estructura común de una nota
+// Definiendo el esquema base de una nota común
 export const noteBaseSchema = z.object({
 	title: z.string()
 		.min(1, 'El título es obligatorio')

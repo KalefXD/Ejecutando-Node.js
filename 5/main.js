@@ -1,7 +1,6 @@
 import http from 'node:http';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import process from 'node:process';
 import { styleText as c } from 'node:util';
 
 // Configurando servidor HTTP con carpeta pública y variables de entorno
