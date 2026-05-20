@@ -56,6 +56,9 @@ function getMimeType(filePath) {
  * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (ej.: tildes, ñ) se muestren correctamente.
  */
 
+// Llevando el conteo de peticiones
+let reqCount = 0;
+
 // Creando el servidor HTTP
 const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
@@ -63,8 +66,8 @@ const server = http.createServer(async (req, res) => {
 	// Registrando cada petición en la consola con su hora de llegada
 	const requestTime = new Date();
 	console.log(
-		c('gray', requestTime.toLocaleTimeString()),
-		c('green', 'Petición:'),
+		c('gray', requestTime.toLocaleString()),
+		c('green', `Petición #${++reqCount}:`),
 		c('yellow', req.socket.remoteAddress),
 		c('magenta', method),
 		c('cyan', url)
@@ -102,7 +105,7 @@ const server = http.createServer(async (req, res) => {
 		const responseTime = Date.now() - requestTime.getTime();
 		console.log(
 			c('gray', responseTime + 'ms'),
-			c('green', 'Respuesta:'),
+			c('green', `Respuesta #${reqCount}:`),
 			c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
 		);
 	}
@@ -145,4 +148,9 @@ server.listen(PORT, HOST, () => {
  * `SIGTERM` la envían herramientas del sistema o comandos como `kill`.
  * Escuchar estas señales permite hacer una limpieza ordenada antes de salir:
  * cerrar el servidor, liberar recursos o terminar conexiones abiertas.
+ * También existe el evento `exit` en `process`, que se dispara cuando el proceso está a punto de cerrarse.
+ * Sin embargo, mezclarlo con señales en el mismo handler causa problemas: al pulsar Ctrl+C,
+ * `SIGINT` llama a `server.close()`, que termina con `process.exit(0)`, lo que dispara `exit`
+ * y ejecuta el handler una segunda vez. Además, `exit` solo admite código síncrono,
+ * por lo que operaciones como `server.close()` no tendrían tiempo de completarse ahí.
  */

@@ -72,6 +72,8 @@ function parseJsonData(req) {
 	});
 }
 
+let reqCount = 0;
+
 // Creando el servidor HTTP para la API de Notas
 const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
@@ -79,7 +81,7 @@ const server = http.createServer(async (req, res) => {
 	const requestTime = new Date();
 	console.log(
 		c('gray', requestTime.toLocaleTimeString()),
-		c('green', 'Petición:'),
+		c('green', `Petición #${++reqCount}:`),
 		c('yellow', req.socket.remoteAddress),
 		c('magenta', method),
 		c('cyan', url)
@@ -158,7 +160,7 @@ const server = http.createServer(async (req, res) => {
 		const responseTime = Date.now() - requestTime.getTime();
 		console.log(
 			c('gray', responseTime + 'ms'),
-			c('green', 'Respuesta:'),
+			c('green', `Respuesta #${reqCount}:`),
 			c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
 		);
 	}
