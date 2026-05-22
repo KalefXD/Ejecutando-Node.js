@@ -1,3 +1,9 @@
+/**
+ * 6. Creando un servidor de notas
+ * 
+ * [3 Resumenes]
+ */
+
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,13 +44,13 @@ const HOST = process.env.HOST ?? 'localhost';
 function parseJsonData(req) {
 	return new Promise((resolve, reject) => {
 		let body = '';
+
 		// Limitando el cuerpo a 1MB para prevenir ataques DoS
 		const maxSize = 1024 * 1024;
 
 		// Verificando que el Content-Type sea application/json
-		if (!req.headers['content-type']?.includes('application/json')) {
+		if (!req.headers['content-type']?.includes('application/json'))
 			return reject(new Error('Content-Type debe ser application/json.'));
-		}
 
 		// Manejando los fragmentos de datos cuando llegen
 		req.on('data', chunk => {
@@ -60,14 +66,14 @@ function parseJsonData(req) {
 		// Manejando el final de la transmisión de datos
 		req.on('end', () => {
 			try {
-				// Intentar parsear el JSON acumulado
+				// Intentando parsear el JSON acumulado
 				resolve(JSON.parse(body));
 			} catch (err) {
 				reject(new Error('JSON inválido: ' + err.message));
 			}
 		});
 
-		// Manejar errores durante la transmisión
+		// Manejando errores durante la transmisión
 		req.on('error', reject);
 	});
 }
@@ -91,7 +97,7 @@ const server = http.createServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-	
+
 	/**
 	 * Apuntes:
 	 * CORS (Cross-Origin Resource Sharing) permite que aplicaciones web en un dominio accedan a recursos de otro dominio.
@@ -127,26 +133,26 @@ const server = http.createServer(async (req, res) => {
 				return send(200, notas);
 			}
 			// GET /notas/:id - Obtener una nota específica por ID
-			else if (method === 'GET' && id) {
+			if (method === 'GET' && id) {
 				const nota = await obtenerNota(id);
 				return nota ? send(200, nota) : send(404, { error: 'Nota no encontrada' });
 			}
 			// POST /notas - Crear una nueva nota
-			else if (method === 'POST' && !id) {
+			if (method === 'POST' && !id) {
 				const notaData = await parseJsonData(req);
 				const nuevaNota = await agregarNota(notaData);
 				return send(201, nuevaNota); // 201 Created indica recurso creado exitosamente
 			}
 			// PUT /notas/:id - Reemplazar completamente una nota existente
 			// PATCH /notas/:id - Actualizar parcialmente una nota existente
-			else if ((method === 'PUT' || method === 'PATCH') && id) {
+			if ((method === 'PUT' || method === 'PATCH') && id) {
 				const cambios = await parseJsonData(req);
 				const esReemplazo = method === 'PUT';
 				const actualizada = await actualizarNota(id, cambios, esReemplazo);
 				return actualizada ? send(200, actualizada) : send(404, { error: 'Nota no encontrada' });
 			}
 			// DELETE /notas/:id - Eliminar una nota específica
-			else if (method === 'DELETE' && id) {
+			if (method === 'DELETE' && id) {
 				const exito = await eliminarNota(id);
 				return exito ? send(204, null) : send(404, { error: 'Nota no encontrada' }); // 204 No Content para eliminación exitosa
 			}

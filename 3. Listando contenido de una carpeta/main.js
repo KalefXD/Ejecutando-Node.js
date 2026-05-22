@@ -1,7 +1,8 @@
 /**
- * Listar el contenido de un directorio.
- *
- * En este script se lee un directorio con `fs.readdir()`, se recorren sus entradas
+ * 3. Listando contenido de una carpeta
+ * 
+ * En este script se alista el contenido de un directorio con información de cada archivo.
+ * Se lee un directorio con `fs.readdir()`, se recorren sus entradas
  * y se consultan los metadatos de cada una con `fs.stat()`.
  * A diferencia del script anterior, los errores se manejan entrada por entrada,
  * lo que permite continuar listando aunque algún archivo no sea accesible.

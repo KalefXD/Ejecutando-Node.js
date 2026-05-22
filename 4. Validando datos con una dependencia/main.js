@@ -1,7 +1,7 @@
 /**
- * Validar datos de usuario con una dependencia externa.
- *
- * En este script se instala y usa "zod", la primera dependencia externa del repositorio.
+ * 4. Validando datos con una dependencia
+ * 
+ * En este script se comprueba la instalación de la dependencia Zod y se validan datos del usuario con la dependencia.
  * Se crea una pequeña CLI interactiva con `node:readline` que solicita datos al usuario
  * y los valida contra un esquema definido con Zod.
  * El lector verá cómo gestionar paquetes externos, definir esquemas de validación,

@@ -1,8 +1,8 @@
 /**
- * Crear un servidor HTTP con Node.js.
+ * 5. Creando un servidor HTTP
  *
- * En este script se usa el módulo nativo `node:http` para levantar un servidor web
- * que sirve archivos estáticos desde una carpeta pública.
+ * En este script se crea un servidor HTTP para levantarun servidor
+ * web que sirve archivos estáticos desde una carpeta pública.
  * Se trabaja con rutas, tipos MIME, manejo de errores HTTP y señales del sistema operativo.
  * El lector verá cómo funciona un servidor web básico desde adentro: recibir una petición,
  * localizar el archivo en disco, asignarle el tipo correcto y enviarlo como respuesta al navegador.
@@ -22,15 +22,14 @@ const HOST = process.env.HOST ?? 'localhost';
  * Apuntes:
  * `PORT` define en qué puerto escuchará el servidor, y `HOST` en qué interfaz de red lo hará.
  * Usar `localhost` limita el acceso al equipo local, mientras que `0.0.0.0` lo expone a la red.
- * Asignar el puerto a `0` le indica al sistema operativo que elija uno libre automáticamente,
- * algo útil en desarrollo para evitar conflictos si el puerto ya está ocupado.
+ * Asignar el puerto a `0` le indica al sistema operativo que elija uno libre automáticamente.
  * Puedes definir estas variables al ejecutar el script: `PORT=3000 HOST=0.0.0.0 node main.js carpeta`.
  */
 
 if (!process.argv[2]) console.log(
 	c('red', 'Uso: node main.js <carpeta>'),
 	c('green', '[opcional: directorio actual]'),
-	'\nDescripción: Inicia un servidor HTTP que sirve archivos estáticos.',
+	'\nDescripción: Inicia un servidor HTTP que sirve archivos estáticos.'
 );
 
 // Función para obtener el tipo MIME según la extensión del archivo
@@ -53,7 +52,7 @@ function getMimeType(filePath) {
  * Apuntes:
  * Los tipos MIME le indican al navegador cómo interpretar el contenido de un archivo (ej.: `text/html` para una página web).
  * `application/octet-stream` es el tipo genérico para datos binarios desconocidos, lo que usualmente provoca su descarga.
- * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (ej.: tildes, ñ) se muestren correctamente.
+ * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (tildes, ñ) se muestren correctamente.
  */
 
 // Llevando el conteo de peticiones

@@ -1,4 +1,9 @@
-import express from 'express';
+/**
+ * 7. Creando una APP de notas
+ * 
+ * [3 Resumenes]
+ */
+
 import cors from 'cors';
 import z from 'zod';
 import path from 'node:path';

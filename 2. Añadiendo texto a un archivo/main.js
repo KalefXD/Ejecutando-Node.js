@@ -1,8 +1,8 @@
 /**
- * Añadir texto al final de un archivo usando promesas.
+ * 2. Añadiendo texto a un archivo
  *
- * En este script se trabaja con el sistema de archivos de Node.js a través de `fs/promises`,
- * se leen argumentos desde la línea de comandos y se encadenan promesas con `.then()` y `.catch()`.
+ * En este script se usa el sistema de archivos de Node para añadir un texto al final de un archivo.
+ * Se leen argumentos desde la línea de comandos y se encadenan promesas con `.then()` y `.catch()`.
  * El flujo muestra cómo verificar si un archivo existe, crearlo si no, añadirle contenido
  * y leerlo al final para confirmar el resultado.
  */
