@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -11,7 +11,7 @@ async function guardarNotas(notas) {
 	await writeFile(DB_PATH, JSON.stringify(notas, null, 2));
 }
 
-// Exportando funciones para las operaciones CRUD (Create, Read, Update, Delete) sobre las notas.
+// Exportando funciones para las operaciones CRUD sobre las notas
 export async function leerNotas() {
 	try {
 		// Intentando leer el archivo de la base de datos
@@ -55,7 +55,7 @@ export async function agregarNota(nota) {
 export async function obtenerNota(id) {
 	try {
 		const notas = await leerNotas();
-		
+
 		// Buscando la nota que coincida con el ID proporcionado
 		const nota = notas.find(n => n.id === id);
 
@@ -100,7 +100,7 @@ export async function eliminarNota(id) {
 
 		// Filtrar todas las notas excepto la que tiene el ID a eliminar
 		const nuevas = notas.filter(n => n.id !== id);
-		
+
 		// Verificar si se eliminó alguna nota comparando las longitudes
 		if (nuevas.length === notas.length) return false; // No se encontró la nota a eliminar
 

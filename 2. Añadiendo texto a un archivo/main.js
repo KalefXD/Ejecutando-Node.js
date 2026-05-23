@@ -3,7 +3,7 @@
  *
  * En este script se usa el sistema de archivos de Node para añadir un texto al final de un archivo.
  * Se leen argumentos desde la línea de comandos y se encadenan promesas con `.then()` y `.catch()`.
- * El flujo muestra cómo verificar si un archivo existe, crearlo si no, añadirle contenido
+ * El lector verá cómo verificar si un archivo existe, crearlo si no, añadirle contenido
  * y leerlo al final para confirmar el resultado.
  */
 

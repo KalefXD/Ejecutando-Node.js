@@ -1,8 +1,7 @@
 /**
  * 5. Creando un servidor HTTP
  *
- * En este script se crea un servidor HTTP para levantarun servidor
- * web que sirve archivos estáticos desde una carpeta pública.
+ * En este script se crea un servidor HTTP que sirve archivos estáticos desde una carpeta pública.
  * Se trabaja con rutas, tipos MIME, manejo de errores HTTP y señales del sistema operativo.
  * El lector verá cómo funciona un servidor web básico desde adentro: recibir una petición,
  * localizar el archivo en disco, asignarle el tipo correcto y enviarlo como respuesta al navegador.
@@ -73,7 +72,7 @@ const server = http.createServer(async (req, res) => {
 	);
 
 	// Ignorando query strings y decodificando caracteres especiales de la URL
-    const urlPath = decodeURIComponent(url.split('?')[0]);
+	const urlPath = decodeURIComponent(url.split('?')[0]);
 	let filePath = path.join(PUBLIC_DIR, urlPath);
 
 	// Buscando el archivo `index.html` si la ruta es un directorio

@@ -1,7 +1,11 @@
 /**
  * 6. Creando un servidor de notas
- * 
- * [3 Resumenes]
+ *
+ * En este script se construye una API REST de notas usando únicamente módulos nativos de Node.js.
+ * Se parsea el cuerpo de las peticiones manualmente, se configuran cabeceras CORS y se enrutan
+ * las peticiones según el método HTTP y los segmentos de la URL.
+ * El lector verá cómo estructurar una API sin frameworks, separar la lógica en módulos
+ * y gestionar el ciclo completo de una petición desde que llega hasta que se responde.
  */
 
 import http from 'node:http';
@@ -18,10 +22,9 @@ import {
 
 /**
  * Apuntes:
- * Este script implementa una API REST (Representational State Transfer) usando únicamente módulos nativos de Node.js.
- * REST es un estilo arquitectónico que utiliza métodos HTTP estándar (GET, POST, PUT, PATCH, DELETE) para operaciones CRUD.
- * Una API REST permite que diferentes aplicaciones se comuniquen de manera estandarizada a través de HTTP.
- * CRUD significa Create (crear), Read (leer), Update (actualizar), Delete (eliminar).
+ * REST (Representational State Transfer) es un estilo arquitectónico que usa métodos HTTP estándar
+ * para operaciones CRUD: Create (POST), Read (GET), Update (PUT/PATCH) y Delete (DELETE).
+ * Implementarlo sin frameworks permite ver exactamente cómo funciona cada parte del protocolo.
  */
 
 // Obteniendo nombre y directorio del archivo actual
@@ -94,7 +97,7 @@ const server = http.createServer(async (req, res) => {
 	);
 
 	// Configurando headers CORS para permitir peticiones desde el navegador
-    res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 

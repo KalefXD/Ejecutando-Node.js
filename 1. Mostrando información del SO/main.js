@@ -3,7 +3,7 @@
  *
  * En este script se usan módulos nativos para mostrar información básica
  * del sistema operativo y de la red, además de un saludo inicial en consola.
- * [*resumen del código*]
+ * Se consultan propiedades del SO con `node:os` y se recorren las interfaces de red con `Object.entries()`.
  * El lector verá cómo importar módulos nativos, consultar propiedades del sistema
  * y recorrer interfaces de red.
  */
@@ -17,8 +17,8 @@ import { styleText as c } from 'node:util';
  * Los módulos nativos de Node.js forman parte de su núcleo, por lo que no requieren instalación adicional.
  * El módulo `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
  * El módulo `node:util` ofrece diversas utilidades para el desarrollo.
- * `styleText` aplica estilos ANSI a un texto, estos tipos de estilos pueden
- * ser eliminados con el método `stripVTControlCharacters()` de `node:util`.
+ * `styleText` aplica estilos ANSI a un texto; estos estilos pueden eliminarse
+ * con el método `stripVTControlCharacters()` del mismo módulo.
  *
  * El prefijo `node:` indica que el módulo forma parte del núcleo de Node.js,
  * lo que ayuda a evitar confusiones con paquetes de terceros que tengan el mismo nombre.

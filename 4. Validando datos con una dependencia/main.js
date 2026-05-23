@@ -1,7 +1,7 @@
 /**
  * 4. Validando datos con una dependencia
  * 
- * En este script se comprueba la instalación de la dependencia Zod y se validan datos del usuario con la dependencia.
+ * En este script se verifica la instalación de Zod y se validan datos de usuario con sus esquemas.
  * Se crea una pequeña CLI interactiva con `node:readline` que solicita datos al usuario
  * y los valida contra un esquema definido con Zod.
  * El lector verá cómo gestionar paquetes externos, definir esquemas de validación,
@@ -36,11 +36,11 @@ const z = await import('zod')
  * Apuntes:
  * Este script utiliza una dependencia externa: `zod`. Las dependencias son paquetes
  * de código de terceros que se gestionan con `npm` y se listan en un archivo `package.json`.
- * La dependencia `zod` sirve para validar y tipar datos de forma segura en JavaScript/TypeScript.
+ * Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
  *
  * Se recomienda leer la documentación de cada dependencia que aparezca en este repositorio para entender su propósito,
  * cómo usarla y sus limitaciones, ya que no habrá apuntes detallados sobre cada una de ellas en los scripts siguientes,
- * sino solo las partes relevantes para los scripts de este repositorio, y en algunos casos ni siquiera eso.
+ * sino solo las partes relevantes para cada script, y en algunos casos ni siquiera eso.
  *
  * La verificación de instalación con `await import()` es un recurso didáctico, no una práctica común.
  * En proyectos reales, se asume que las dependencias del `package.json` ya fueron instaladas con `npm install`.
