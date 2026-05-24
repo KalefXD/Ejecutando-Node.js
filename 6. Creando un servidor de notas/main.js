@@ -21,7 +21,7 @@ import {
 } from './notas.js';
 
 /**
- * Apuntes:
+ * Apunte #1:
  * REST (Representational State Transfer) es un estilo arquitectónico que usa métodos HTTP estándar
  * para operaciones CRUD: Create (POST), Read (GET), Update (PUT/PATCH) y Delete (DELETE).
  * Implementarlo sin frameworks permite ver exactamente cómo funciona cada parte del protocolo.
@@ -32,7 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
- * Apuntes:
+ * Apunte #2:
  * En ES modules, no tenemos acceso directo a __filename y __dirname como en CommonJS.
  * `import.meta.url` devuelve la URL del módulo actual (ej: file:///path/to/file.js).
  * `fileURLToPath()` convierte esa URL del archivo a una ruta del sistema de archivos.
@@ -102,7 +102,7 @@ const server = http.createServer(async (req, res) => {
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
 	/**
-	 * Apuntes:
+	 * Apunte #3:
 	 * CORS (Cross-Origin Resource Sharing) permite que aplicaciones web en un dominio accedan a recursos de otro dominio.
 	 * Sin CORS, los navegadores bloquean peticiones entre diferentes orígenes por seguridad (Same-Origin Policy).
 	 * Las peticiones OPTIONS son "preflight requests" que los navegadores envían automáticamente para verificar permisos.
@@ -186,7 +186,7 @@ server.listen(PORT, HOST, () => {
 });
 
 /**
- * Apuntes:
+ * Apunte #4:
  * Puedes probar esta API usando herramientas como Postman o curl desde la terminal: curl -X <METHOD> <URL> -H <HEADER> -d <DATA>
  * Ej.: curl -X POST http://localhost:3000/notas -H "Content-Type: application/json" -d '{"titulo":"Mi Nota","contenido":"Contenido de la nota"}'
  */

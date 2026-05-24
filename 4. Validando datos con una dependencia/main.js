@@ -12,7 +12,7 @@ import readline from 'node:readline';
 import { styleText as c } from 'node:util';
 
 /**
- * Apuntes:
+ * Apunte #1:
  * El módulo `node:readline` permite leer y procesar entradas de texto línea por línea desde la consola o desde un flujo de datos.
  * Esto facilita la creación de interfaces de línea de comandos (CLI) interactivas.
  * Puede leer datos desde un flujo de entrada (como `stdin` para el teclado) y escribirlos en un flujo de salida (como `stdout`).
@@ -33,7 +33,7 @@ const z = await import('zod')
 	});
 
 /**
- * Apuntes:
+ * Apunte #2:
  * Este script utiliza una dependencia externa: `zod`. Las dependencias son paquetes
  * de código de terceros que se gestionan con `npm` y se listan en un archivo `package.json`.
  * Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
@@ -72,7 +72,7 @@ const UserSchema = z.object({
 });
 
 /**
- * Apuntes:
+ * Apunte #3:
  * Los esquemas de `zod` definen la estructura y las reglas que deben cumplir los datos.
  * `z.coerce` intenta convertir un valor al tipo esperado (ej: el string "50" al number `50`) antes de validar.
  */

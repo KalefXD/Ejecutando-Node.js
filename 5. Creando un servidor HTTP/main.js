@@ -18,7 +18,7 @@ const PORT = process.env.PORT ?? 0;
 const HOST = process.env.HOST ?? 'localhost';
 
 /**
- * Apuntes:
+ * Apunte #1:
  * `PORT` define en qué puerto escuchará el servidor, y `HOST` en qué interfaz de red lo hará.
  * Usar `localhost` limita el acceso al equipo local, mientras que `0.0.0.0` lo expone a la red.
  * Asignar el puerto a `0` le indica al sistema operativo que elija uno libre automáticamente.
@@ -48,7 +48,7 @@ function getMimeType(filePath) {
 }
 
 /**
- * Apuntes:
+ * Apunte #2:
  * Los tipos MIME le indican al navegador cómo interpretar el contenido de un archivo (ej.: `text/html` para una página web).
  * `application/octet-stream` es el tipo genérico para datos binarios desconocidos, lo que usualmente provoca su descarga.
  * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (tildes, ñ) se muestren correctamente.
@@ -110,7 +110,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 /**
- * Apuntes:
+ * Apunte #3:
  * El módulo `node:http` permite crear y manejar servidores y clientes HTTP.
  * `http.createServer()` crea un servidor HTTP y recibe un callback que se ejecuta con cada petición.
  * El callback recibe dos objetos: `req` (request), con información sobre la petición del cliente
@@ -140,7 +140,7 @@ server.listen(PORT, HOST, () => {
 }));
 
 /**
- * Apuntes:
+ * Apunte #4:
  * `SIGINT` y `SIGTERM` son señales que el sistema operativo envía a un proceso para pedirle que termine.
  * `SIGINT` se genera cuando el usuario pulsa Ctrl+C en la terminal.
  * `SIGTERM` la envían herramientas del sistema o comandos como `kill`.

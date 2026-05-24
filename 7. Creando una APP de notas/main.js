@@ -17,7 +17,7 @@ import {
 } from './notas.schema.js'; // Importa los esquemas de validación
 
 /**
- * Apuntes:
+ * Apunte #1:
  * La dependencia `express` permite crear y gestionar servidores web de forma sencilla y eficiente.
  * La dependencia `cors` permite habilitar y controlar el acceso de recursos entre distintos orígenes en una API o servidor.
  */
@@ -44,7 +44,7 @@ app.use(cors());
 app.use(express.json());
 
 /**
- * Apuntes:
+ * Apunte #2:
  * El header "X-Powered-By: Express" revela información sobre la tecnología usada.
  * Los atacantes pueden usar esta información para exploits específicos de Express.
  * Es una buena práctica de seguridad ocultar detalles de implementación.

@@ -28,7 +28,7 @@ fs.readdir(folder)
 	.then(async files => {
 
 		/**
-		 * Apuntes:
+		 * Apuntes #1:
 		 * Se usa una función `async` dentro de `.then()` para poder usar `await` con `fs.stat()`.
 		 *
 		 * Marcar la función como `async` hace que retorne automáticamente una Promise.
@@ -58,12 +58,6 @@ fs.readdir(folder)
 			// Uniendo la ruta del directorio con el nombre del archivo
 			const fullPath = path.join(folder, file);
 
-			/**
-			 * Apuntes:
-			 * `path.join()` construye una ruta combinando segmentos con el separador del sistema operativo.
-			 * Es preferible a concatenar strings con `/` o `\`, ya que funciona igual en Windows, macOS y Linux.
-			 */
-
 			// Obteniendo estadísticas del archivo o directorio
 			let stats;
 			try {
@@ -79,19 +73,6 @@ fs.readdir(folder)
 				continue;
 			}
 
-			/**
-			 * Apuntes:
-			 * `fs.stat()` devuelve un objeto con metadatos sobre una entrada del sistema de archivos:
-			 * tipo, tamaño, fechas de creación y modificación, permisos, entre otros.
-			 * El objeto incluye métodos como `isFile()` e `isDirectory()` para identificar el tipo.
-			 *
-			 * El error se captura aquí dentro del bucle, no fuera, para que un archivo inaccesible
-			 * no interrumpa el listado completo; el script simplemente lo marca y sigue adelante.
-			 *
-			 * Si se necesita consultar los metadatos de un enlace simbólico en lugar del archivo al que apunta,
-			 * se usa `fs.lstat()`.
-			 */
-
 			// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
 			const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
 			const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
@@ -106,6 +87,12 @@ fs.readdir(folder)
 				c('yellow', fileModified)
 			);
 		}
+
+		/**
+		 * Apunte #2:
+		 * Si se necesita consultar los metadatos de un enlace simbólico en lugar del archivo al que apunta,
+		 * se usa `fs.lstat()`.
+		 */
 
 		console.groupEnd();
 	})

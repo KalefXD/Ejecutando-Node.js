@@ -13,13 +13,15 @@ import os from 'node:os';
 import { styleText as c } from 'node:util';
 
 /**
- * Apuntes:
+ * Apunte #1:
  * Los módulos nativos de Node.js forman parte de su núcleo, por lo que no requieren instalación adicional.
+ * 
  * El módulo `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
  * El módulo `node:util` ofrece diversas utilidades para el desarrollo.
- * `styleText` aplica estilos ANSI a un texto; estos estilos pueden eliminarse
- * con el método `stripVTControlCharacters()` del mismo módulo.
- *
+ * 
+ * `styleText` aplica colores y estilos a un texto mediante secuencias de escape ANSI.
+ * Para poder quitar esos caracteres de formato, `node:util` también incluye `stripVTControlCharacters()`.
+ * 
  * El prefijo `node:` indica que el módulo forma parte del núcleo de Node.js,
  * lo que ayuda a evitar confusiones con paquetes de terceros que tengan el mismo nombre.
  */
@@ -29,14 +31,12 @@ global.console.log(
 	c('yellow', '¡Hola mundo!'),
 	`Bienvenido a ${c('green', 'Node.js')}, un entorno de ejecución de JavaScript del lado del servidor.`
 );
-
 /**
- * Apuntes:
- * `global` (similar a `window` en el navegador) es el objeto global de Node.js,
- * que contiene todas las variables y funciones globales.
- * `globalThis` hace referencia al objeto global en cualquier entorno de JavaScript,
- * permitiendo escribir código multiplataforma.
- * Por lo tanto, `global` y `globalThis` apuntan al mismo objeto global en Node.js.
+ * Apunte #2:
+ * `global` es el objeto global de Node.js, el equivalente a `window` en los navegadores, pero exclusivo de Node.
+ * `global.console.log` solo demuestra que `console` vive ahí; en la práctica, nadie lo llama así.
+ * `globalThis` es la alternativa estándar que funciona en cualquier entorno de JavaScript,
+ * y en Node.js apunta al mismo objeto que `global`.
  */
 
 // Mostrando información general del sistema operativo
@@ -71,12 +71,10 @@ Object.entries(os.networkInterfaces()).forEach(([name, interfaces]) => {
 console.groupEnd();
 
 /**
- * Apuntes:
- * `os.networkInterfaces()` devuelve un objeto con todas las interfaces de red disponibles.
- * Cada interfaz puede tener varias direcciones, por ejemplo una IPv4 y una IPv6.
- *
+ * Apunte #3:
  * La propiedad `internal` indica si la dirección pertenece a una interfaz de loopback,
  * como `127.0.0.1` (IPv4) o `::1` (IPv6), que el sistema usa para comunicarse consigo mismo.
- * Una dirección con `internal: false` puede ser tanto una IP privada de red local (como 192.168.x.x
- * o 10.x.x.x) como una IP pública; Node.js no hace esa distinción aquí.
+ * `internal: false` solo significa "no es loopback"; no implica que la IP sea pública.
+ * Distinguir si una IP es privada (como 192.168.x.x o 10.x.x.x) o pública requiere
+ * analizar el rango de la dirección, algo que `os.networkInterfaces()` no hace.
  */
