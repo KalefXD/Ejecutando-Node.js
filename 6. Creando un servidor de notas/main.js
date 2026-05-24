@@ -40,7 +40,7 @@ const __dirname = path.dirname(__filename);
 
 // Cargando variables de entorno desde un archivo .env
 process.loadEnvFile(path.join(__dirname, '.env'));
-const PORT = process.env.PORT ?? 0;
+const PORT = process.env.PORT ?? 3000;
 const HOST = process.env.HOST ?? 'localhost';
 
 // Función para parsear datos JSON de solicitudes HTTP entrantes
@@ -130,31 +130,31 @@ const server = http.createServer(async (req, res) => {
 	try {
 		// Enrutando las peticiones según el recurso solicitado
 		if (resource === 'notas') {
-			// GET /notas - Obtener todas las notas
+			// GET /notas - Obteniendo todas las notas 
 			if (method === 'GET' && !id) {
 				const notas = await leerNotas();
 				return send(200, notas);
 			}
-			// GET /notas/:id - Obtener una nota específica por ID
+			// GET /notas/:id - Obteniendo una nota por ID
 			if (method === 'GET' && id) {
 				const nota = await obtenerNota(id);
 				return nota ? send(200, nota) : send(404, { error: 'Nota no encontrada' });
 			}
-			// POST /notas - Crear una nueva nota
+			// POST /notas - Creando una nueva nota
 			if (method === 'POST' && !id) {
 				const notaData = await parseJsonData(req);
 				const nuevaNota = await agregarNota(notaData);
 				return send(201, nuevaNota); // 201 Created indica recurso creado exitosamente
 			}
-			// PUT /notas/:id - Reemplazar completamente una nota existente
-			// PATCH /notas/:id - Actualizar parcialmente una nota existente
+			// PUT /notas/:id - Reemplazando completamente una nota por ID
+			// PATCH /notas/:id - Actualizando parcialmente una nota por ID
 			if ((method === 'PUT' || method === 'PATCH') && id) {
 				const cambios = await parseJsonData(req);
 				const esReemplazo = method === 'PUT';
 				const actualizada = await actualizarNota(id, cambios, esReemplazo);
 				return actualizada ? send(200, actualizada) : send(404, { error: 'Nota no encontrada' });
 			}
-			// DELETE /notas/:id - Eliminar una nota específica
+			// DELETE /notas/:id - Eliminando una nota por ID
 			if (method === 'DELETE' && id) {
 				const exito = await eliminarNota(id);
 				return exito ? send(204, null) : send(404, { error: 'Nota no encontrada' }); // 204 No Content para eliminación exitosa
@@ -178,21 +178,18 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
 	const { port } = server.address();
 	console.log(
-		c('magenta', 'Servidor de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}`),
-		c('cyan', '\nPunto de entrada:'), c('yellow', `/notas`)
+		c('magenta', 'Servidor de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/notas`),
+		c('cyan', 'Prueba la API usando herramientas como Postman o curl.'),
+		'Sintaxis de curl: curl -X <METHOD> <URL> -H <HEADER> -d <DATA>',
+		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
-	console.group(c('green', 'Endpoints disponibles:'));
-	[
-		'GET    /notas     - Listar todas las notas',
-		'GET    /notas/:id - Obtener una nota específica',
-		'POST   /notas     - Crear una nueva nota',
-		'PUT    /notas/:id - Reemplazar una nota completa',
-		'PATCH  /notas/:id - Actualizar parcialmente una nota',
-		'DELETE /notas/:id - Eliminar una nota',
-	].forEach(endPoint => console.log(endPoint));
-	console.groupEnd();
-	console.log(c('gray', `Detén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`));
 });
+
+/**
+ * Apuntes:
+ * Puedes probar esta API usando herramientas como Postman o curl desde la terminal: curl -X <METHOD> <URL> -H <HEADER> -d <DATA>
+ * Ej.: curl -X POST http://localhost:3000/notas -H "Content-Type: application/json" -d '{"titulo":"Mi Nota","contenido":"Contenido de la nota"}'
+ */
 
 ['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
 	console.log('\nCerrando servidor...');

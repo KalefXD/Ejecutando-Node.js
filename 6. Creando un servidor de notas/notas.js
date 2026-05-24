@@ -21,6 +21,7 @@ export async function leerNotas() {
 		// Devolviendo un array vacío si el archivo no existe o está corrupto
 		if (err.code === 'ENOENT') {
 			console.log('Archivo de notas no encontrado, creando base de datos vacía...');
+			await guardarNotas([]);
 			return [];
 		}
 		// Propagando el error para otros errores (permisos, JSON malformado, etc.)
