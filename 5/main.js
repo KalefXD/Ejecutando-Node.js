@@ -28,7 +28,7 @@ const HOST = process.env.HOST ?? 'localhost';
 if (!process.argv[2]) console.log(
 	c('red', 'Uso: node main.js <carpeta>'),
 	c('green', '[opcional: directorio actual]'),
-	'\nDescripción: Inicia un servidor HTTP que sirve archivos estáticos.'
+	'\nDescripción: Inicia un servidor HTTP de la carpeta especificada.'
 );
 
 // Función para obtener el tipo MIME según la extensión del archivo
@@ -75,7 +75,7 @@ const server = http.createServer(async (req, res) => {
 	const urlPath = decodeURIComponent(url.split('?')[0]);
 	let filePath = path.join(PUBLIC_DIR, urlPath);
 
-	// Buscando el archivo `index.html` si la ruta es un directorio
+	// Buscando el archivo `index.html` si la ruta termina con `/` (ej.: `/` o `/carpeta/`)
 	if (urlPath.endsWith('/')) filePath = path.join(filePath, 'index.html');
 
 	try {

@@ -1,5 +1,5 @@
 /**
- * 3. Listando contenido de una carpeta
+ * 3. Listando el contenido de una carpeta
  * 
  * En este script se lista el contenido de un directorio mostrando información de cada archivo.
  * Se lee con `fs.readdir()`, se recorren sus entradas y se consultan los metadatos con `fs.stat()`,
@@ -33,7 +33,6 @@ fs.readdir(folder)
 		 *
 		 * Marcar la función como `async` hace que retorne automáticamente una Promise.
 		 * Eso significa que si algo interno lanza un error, se propaga hacia el `.catch()` al final de la cadena.
-		 *
 		 * Sin `async`, el `await` no sería válido sintácticamente, y cualquier error asíncrono interno
 		 * quedaría fuera de la cadena de promesas, y el `.catch()` nunca lo capturaría.
 		 */
@@ -48,50 +47,58 @@ fs.readdir(folder)
 		if (files.length === 0) {
 			console.groupEnd();
 			console.log(c('cyan', 'El directorio está vacío.'));
-			process.exit(0);
+			process.exit();
 		}
 
 		// Encontrando el ancho máximo de los nombres para alinear la salida en consola
 		const maxLength = Math.max(...files.map(f => f.length));
 
-		for (const file of files) {
-			// Uniendo la ruta del directorio con el nombre del archivo
-			const fullPath = path.join(folder, file);
+		// Leyendo en paralelo los metadatos de cada archivo
+		const entries = await Promise.all(
+			// Creando un array de promesas para cada archivo
+			files.map(async file => {
+				// Uniendo la ruta del directorio con el nombre del archivo
+				const fullPath = path.join(folder, file);
 
-			// Obteniendo estadísticas del archivo o directorio
-			let stats;
-			try {
-				stats = await fs.stat(fullPath);
-			} catch {
-				// Mostrando error y continuando con el siguiente si no se puede acceder al archivo
-				console.log(
-					c('red', 'E'),
+				let stats;
+				try {
+					// Obteniendo información del archivo
+					stats = await fs.stat(fullPath);
+				} catch {
+					// Devolviendo una fila de error si no se pudo obtener la información del archivo
+					return [
+						c('red', 'E'),
+						c('cyan', file.padEnd(maxLength)),
+						c('red', 'ERROR'.padStart(12)),
+						c('red', 'Acceso denegado')
+					];
+				}
+
+				// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
+				const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
+				const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
+				const fileSize = fileType == 'F' ? (stats.size / 1024).toFixed(3) + ' KB' : '---';
+				const fileModified = stats.mtime.toLocaleString();
+
+				// Devolviendo un array de texto formateado para cada columna, con colores y alineación
+				return [
+					c(fileTypeColor, fileType),
 					c('cyan', file.padEnd(maxLength)),
-					c('red', 'ERROR'.padStart(12)),
-					c('red', 'Acceso denegado')
-				);
-				continue;
-			}
+					c('green', fileSize.padStart(12)),
+					c('yellow', fileModified)
+				];
+			})
+		);
 
-			// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
-			const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
-			const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
-			const fileSize = fileType == 'F' ? (stats.size / 1024).toFixed(3) + ' KB' : '---';
-			const fileModified = stats.mtime.toLocaleString();
-
-			// Mostrando la información formateada del archivo
-			console.log(
-				c(fileTypeColor, fileType),
-				c('cyan', file.padEnd(maxLength)),
-				c('green', fileSize.padStart(12)),
-				c('yellow', fileModified)
-			);
+		// Imprimiendo cada entrada formateada en consola
+		for (const entry of entries) {
+			console.log(...entry);
 		}
 
 		/**
 		 * Apunte #2:
-		 * Si se necesita consultar los metadatos de un enlace simbólico en lugar del archivo al que apunta,
-		 * se usa `fs.lstat()`.
+		 * Si se necesita consultar los metadatos de un enlace simbólico
+		 * en lugar del archivo al que apunta, se usa `fs.lstat()`.
 		 */
 
 		console.groupEnd();

@@ -27,6 +27,7 @@ const z = await import('zod')
 	.catch(() => {
 		console.error(
 			c('red', 'Error: La dependencia "zod" no está instalada.'),
+			'Info: Este script requiere la dependencia "zod" para validar datos',
 			c('red', '\nEjecuta: npm install zod')
 		);
 		process.exit(1);
@@ -34,9 +35,12 @@ const z = await import('zod')
 
 /**
  * Apunte #2:
- * Este script utiliza una dependencia externa: `zod`. Las dependencias son paquetes
- * de código de terceros que se gestionan con `npm` y se listan en un archivo `package.json`.
- * Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
+ * NPM (Node Package Manager) es un registro público de dependencias para JavaScript (https://www.npmjs.com/).
+ * Las dependencias son paquetes de código abierto de terceros que se puede gestionar con `npm` y se listan en un archivo `package.json`.
+ * `npm` es una utilidad de CLI que instala por defecto Node.js y permite administrar, instalar, actualizar y eliminar dependencias,
+ * así como ejecutar scripts definidos en `package.json`. Existen algunas alternativas a `npm` como `yarn` o `pnpm`.
+ *
+ * La dependencia Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
  *
  * Se recomienda leer la documentación de cada dependencia que aparezca en este repositorio para entender su propósito,
  * cómo usarla y sus limitaciones, ya que no habrá apuntes detallados sobre cada una de ellas en los scripts siguientes,
@@ -73,7 +77,7 @@ const UserSchema = z.object({
 
 /**
  * Apunte #3:
- * Los esquemas de `zod` definen la estructura y las reglas que deben cumplir los datos.
+ * Los esquemas de Zod definen la estructura y las reglas que deben cumplir los datos.
  * `z.coerce` intenta convertir un valor al tipo esperado (ej: el string "50" al number `50`) antes de validar.
  */
 

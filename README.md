@@ -2,6 +2,15 @@
 
 Colección de ejemplos y ejercicios pequeños para aprender de Node.js. Cada carpeta contiene un ejemplo independiente con un `main.js`, con archivos asociados y apuntes breves.
 
+**Scripts**
+1. Mostrando información del SO
+2. Añadiendo texto a un archivo
+3. Listando el contenido de una carpeta
+4. Validando datos con una dependencia
+5. Creando un servidor HTTP
+6. Creando un servidor de notas
+7. Creando una APP de notas
+
 **Requisitos**
 - Tener instalado Node.js (recomendado v14 o superior).
 - Saber JavaScript.

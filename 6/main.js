@@ -35,7 +35,6 @@ const __dirname = path.dirname(__filename);
  * Apunte #2:
  * En ES modules, no tenemos acceso directo a __filename y __dirname como en CommonJS.
  * `import.meta.url` devuelve la URL del módulo actual (ej: file:///path/to/file.js).
- * `fileURLToPath()` convierte esa URL del archivo a una ruta del sistema de archivos.
  */
 
 // Cargando variables de entorno desde un archivo .env
@@ -161,7 +160,7 @@ const server = http.createServer(async (req, res) => {
 			}
 		}
 
-		// Devolver 404 si no coincide con ninguna ruta
+		// Devolviendo 404 si no coincide con ninguna ruta
 		return send(404, { error: 'Ruta no encontrada' });
 	} catch (err) {
 		return send(400, { error: 'Error procesando la solicitud', detalle: err.message }); // 400 Bad Request
@@ -180,7 +179,6 @@ server.listen(PORT, HOST, () => {
 	console.log(
 		c('magenta', 'Servidor de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/notas`),
 		c('cyan', 'Prueba la API usando herramientas como Postman o curl.'),
-		'Sintaxis de curl: curl -X <METHOD> <URL> -H <HEADER> -d <DATA>',
 		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });
