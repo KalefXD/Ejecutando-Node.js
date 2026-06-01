@@ -27,7 +27,7 @@ const z = await import('zod')
 	.catch(() => {
 		console.error(
 			c('red', 'Error: La dependencia "zod" no está instalada.'),
-			'Info: Este script requiere la dependencia "zod" para validar datos',
+			'\nInfo: Este script requiere la dependencia "zod" para validar datos',
 			c('red', '\nEjecuta: npm install zod')
 		);
 		process.exit(1);

@@ -56,37 +56,36 @@ fs.readdir(folder)
 		// Leyendo en paralelo los metadatos de cada archivo
 		const entries = await Promise.all(
 			// Creando un array de promesas para cada archivo
-			files.map(async file => {
+			files.map(async (file, i) => {
 				// Uniendo la ruta del directorio con el nombre del archivo
 				const fullPath = path.join(folder, file);
 
-				let stats;
-				try {
-					// Obteniendo información del archivo
-					stats = await fs.stat(fullPath);
-				} catch {
-					// Devolviendo una fila de error si no se pudo obtener la información del archivo
-					return [
-						c('red', 'E'),
-						c('cyan', file.padEnd(maxLength)),
-						c('red', 'ERROR'.padStart(12)),
-						c('red', 'Acceso denegado')
-					];
-				}
+				// Obteniendo información del archivo
+				return fs.stat(fullPath)
+					.then(stats => {
+						// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
+						const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
+						const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
+						const fileSize = fileType == 'F' ? (stats.size / 1024).toFixed(3) + ' KB' : '---';
+						const fileModified = stats.mtime.toLocaleString();
 
-				// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
-				const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
-				const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
-				const fileSize = fileType == 'F' ? (stats.size / 1024).toFixed(3) + ' KB' : '---';
-				const fileModified = stats.mtime.toLocaleString();
-
-				// Devolviendo un array de texto formateado para cada columna, con colores y alineación
-				return [
-					c(fileTypeColor, fileType),
-					c('cyan', file.padEnd(maxLength)),
-					c('green', fileSize.padStart(12)),
-					c('yellow', fileModified)
-				];
+						// Devolviendo un array de texto formateado para cada columna, con colores y alineación
+						return [
+							c(fileTypeColor, fileType),
+							c('cyan', file.padEnd(maxLength)),
+							c('green', fileSize.padStart(12)),
+							c('yellow', fileModified)
+						];
+					})
+					.catch(() => {
+						// Devolviendo una fila de error si no se pudo obtener la información del archivo
+						return [
+							c('red', 'E'),
+							c('cyan', file.padEnd(maxLength)),
+							c('red', 'ERROR'.padStart(12)),
+							c('red', 'Acceso denegado')
+						];
+					});
 			})
 		);
 

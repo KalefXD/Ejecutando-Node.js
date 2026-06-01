@@ -1,7 +1,7 @@
 /**
- * 5. Creando un servidor HTTP
+ * 5. Creando un servidor web HTTP
  *
- * En este script se crea un servidor HTTP que sirve archivos estáticos desde una carpeta pública.
+ * En este script se crea un servidor web HTTP que sirve archivos estáticos desde una carpeta pública.
  * Se trabaja con rutas, tipos MIME, manejo de errores HTTP y señales del sistema operativo.
  * El lector verá cómo funciona un servidor web básico desde adentro: recibir una petición,
  * localizar el archivo en disco, asignarle el tipo correcto y enviarlo como respuesta al navegador.
@@ -12,13 +12,19 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { styleText as c } from 'node:util';
 
+/**
+ * Apunte #1:
+ * El módulo `node:http` permite crear y manejar servidores y clientes HTTP.
+ * HTTP (Hypertext Transfer Protocol) es el protocolo de comunicación entre los navegadores y servidores web.
+ */
+
 // Configurando la carpeta pública y las variables del servidor
 const PUBLIC_DIR = path.resolve(process.argv[2] ?? '.');
 const PORT = process.env.PORT ?? 0;
 const HOST = process.env.HOST ?? 'localhost';
 
 /**
- * Apunte #1:
+ * Apunte #2:
  * `PORT` define en qué puerto escuchará el servidor, y `HOST` en qué interfaz de red lo hará.
  * Usar `localhost` limita el acceso al equipo local, mientras que `0.0.0.0` lo expone a la red.
  * Asignar el puerto a `0` le indica al sistema operativo que elija uno libre automáticamente.
@@ -48,24 +54,25 @@ function getMimeType(filePath) {
 }
 
 /**
- * Apunte #2:
+ * Apunte #3:
  * Los tipos MIME le indican al navegador cómo interpretar el contenido de un archivo (ej.: `text/html` para una página web).
  * `application/octet-stream` es el tipo genérico para datos binarios desconocidos, lo que usualmente provoca su descarga.
  * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (tildes, ñ) se muestren correctamente.
  */
 
 // Llevando el conteo de peticiones
-let reqCount = 0;
+let requestCount = 0;
 
 // Creando el servidor HTTP
 const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
 
 	// Registrando cada petición en la consola con su hora de llegada
+	const requestId = ++requestCount;
 	const requestTime = new Date();
 	console.log(
 		c('gray', requestTime.toLocaleString()),
-		c('green', `Petición #${++reqCount}:`),
+		c('green', `Petición #${requestId}:`),
 		c('yellow', req.socket.remoteAddress),
 		c('magenta', method),
 		c('cyan', url)
@@ -98,25 +105,29 @@ const server = http.createServer(async (req, res) => {
 			res.end('500 - Internal Server Error');
 		}
 
-	} finally {
-        // Registrando la respuesta con el tiempo de procesamiento
-		const responseTime = Date.now() - requestTime.getTime();
-		console.log(
-			c('gray', responseTime + 'ms'),
-			c('green', `Respuesta #${reqCount}:`),
-			c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
-		);
 	}
+
+	// Registrando la respuesta con el tiempo de procesamiento
+	const responseTime = Date.now() - requestTime.getTime();
+	console.log(
+		c('gray', responseTime + 'ms'),
+		c('green', `Respuesta #${requestId}:`),
+		c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
+	);
 });
 
 /**
- * Apunte #3:
- * El módulo `node:http` permite crear y manejar servidores y clientes HTTP.
+ * Apunte #4:
  * `http.createServer()` crea un servidor HTTP y recibe un callback que se ejecuta con cada petición.
  * El callback recibe dos objetos: `req` (request), con información sobre la petición del cliente
  * (método, URL, cabeceras, etc.), y `res` (response), para construir y enviar la respuesta.
- * Los códigos de estado HTTP (200, 404, 500) forman parte del protocolo e indican al cliente
- * si la operación fue exitosa, si el recurso no existe o si hubo un error en el servidor.
+ *
+ * Los códigos de estado de respuesta HTTP indican el estado de una petición HTTP.
+ * Los códigos se agrupan en categorías: Respuestas informativas (1xx), Respuestas exitosas (2xx),
+ * Redirecciones (3xx), Errores del cliente (4xx) y Errores del servidor (5xx).
+ * Estos códigos estan definidos por el IETF en los RFC de HTTP, alistadas oficialmente por el IANA.
+ * Aunque pueden usarse códigos personalizados, es recomendable seguir los estándares
+ * para asegurar la compatibilidad con clientes y herramientas.
  */
 
 // Iniciando el servidor para que escuche peticiones

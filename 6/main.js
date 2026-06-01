@@ -1,5 +1,5 @@
 /**
- * 6. Creando un servidor de notas
+ * 6. Creando una API de notas
  *
  * En este script se construye una API REST de notas usando únicamente módulos nativos de Node.js.
  * Se parsea el cuerpo de las peticiones manualmente, se configuran cabeceras CORS y se enrutan
@@ -33,7 +33,7 @@ const __dirname = path.dirname(__filename);
 
 /**
  * Apunte #2:
- * En ES modules, no tenemos acceso directo a __filename y __dirname como en CommonJS.
+ * En ES modules, no tenemos acceso directo a `__filename` y `__dirname` como en CommonJS.
  * `import.meta.url` devuelve la URL del módulo actual (ej: file:///path/to/file.js).
  */
 
@@ -80,16 +80,17 @@ function parseJsonData(req) {
 	});
 }
 
-let reqCount = 0;
+let requestCount = 0;
 
 // Creando el servidor HTTP para la API de Notas
 const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
 
+	const requestId = ++requestCount;
 	const requestTime = new Date();
 	console.log(
 		c('gray', requestTime.toLocaleTimeString()),
-		c('green', `Petición #${++reqCount}:`),
+		c('green', `Petición #${requestId}:`),
 		c('yellow', req.socket.remoteAddress),
 		c('magenta', method),
 		c('cyan', url)
@@ -122,35 +123,35 @@ const server = http.createServer(async (req, res) => {
 
 	// Parseando la URL para extraer la ruta y parámetros
 	const urlPath = decodeURIComponent(url.split('?')[0]);
-	const partes = urlPath.split('/').filter(Boolean);
-	const resource = partes[0];
-	const id = partes[1];
+	const parts = urlPath.split('/').filter(Boolean);
+	const resource = parts[0];
+	const id = parts[1];
 
 	try {
 		// Enrutando las peticiones según el recurso solicitado
 		if (resource === 'notas') {
 			// GET /notas - Obteniendo todas las notas 
 			if (method === 'GET' && !id) {
-				const notas = await leerNotas();
-				return send(200, notas);
+				const notes = await leerNotas();
+				return send(200, notes);
 			}
 			// GET /notas/:id - Obteniendo una nota por ID
 			if (method === 'GET' && id) {
-				const nota = await obtenerNota(id);
-				return nota ? send(200, nota) : send(404, { error: 'Nota no encontrada' });
+				const note = await obtenerNota(id);
+				return note ? send(200, note) : send(404, { error: 'Nota no encontrada' });
 			}
 			// POST /notas - Creando una nueva nota
 			if (method === 'POST' && !id) {
-				const notaData = await parseJsonData(req);
-				const nuevaNota = await agregarNota(notaData);
-				return send(201, nuevaNota); // 201 Created indica recurso creado exitosamente
+				const dataNote = await parseJsonData(req);
+				const newNote = await agregarNota(dataNote);
+				return send(201, newNote); // 201 Created indica recurso creado exitosamente
 			}
 			// PUT /notas/:id - Reemplazando completamente una nota por ID
 			// PATCH /notas/:id - Actualizando parcialmente una nota por ID
 			if ((method === 'PUT' || method === 'PATCH') && id) {
-				const cambios = await parseJsonData(req);
-				const esReemplazo = method === 'PUT';
-				const actualizada = await actualizarNota(id, cambios, esReemplazo);
+				const changes = await parseJsonData(req);
+				const isReplacement = method === 'PUT';
+				const actualizada = await actualizarNota(id, changes, isReplacement);
 				return actualizada ? send(200, actualizada) : send(404, { error: 'Nota no encontrada' });
 			}
 			// DELETE /notas/:id - Eliminando una nota por ID
@@ -168,7 +169,7 @@ const server = http.createServer(async (req, res) => {
 		const responseTime = Date.now() - requestTime.getTime();
 		console.log(
 			c('gray', responseTime + 'ms'),
-			c('green', `Respuesta #${reqCount}:`),
+			c('green', `Respuesta #${requestId}:`),
 			c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
 		);
 	}
@@ -177,16 +178,22 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
 	const { port } = server.address();
 	console.log(
-		c('magenta', 'Servidor de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/notas`),
-		c('cyan', 'Prueba la API usando herramientas como Postman o curl.'),
-		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
+		c('magenta', 'API de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/notas`),
+		c('cyan', '\nPrueba la API usando herramientas como Postman o curl.'),
+		c('gray', `\nDetén la API presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });
 
 /**
  * Apunte #4:
  * Puedes probar esta API usando herramientas como Postman o curl desde la terminal: curl -X <METHOD> <URL> -H <HEADER> -d <DATA>
- * Ej.: curl -X POST http://localhost:3000/notas -H "Content-Type: application/json" -d '{"titulo":"Mi Nota","contenido":"Contenido de la nota"}'
+ * Ej.: 
+ * ```bash
+ * curl http://localhost:3000/notas
+ * -X POST
+ * -H "Content-Type: application/json"
+ * -d '{"titulo":"Nota","contenido":"Contenido de la nota"}'
+ * ```
  */
 
 ['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
