@@ -13,11 +13,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { styleText as c } from 'node:util';
 import {
-	leerNotas,
-	agregarNota,
-	obtenerNota,
-	actualizarNota,
-	eliminarNota
+	getNotes,
+	addNote,
+	getNote,
+	updateNote,
+	deleteNote
 } from './notas.js';
 
 /**
@@ -132,68 +132,62 @@ const server = http.createServer(async (req, res) => {
 		if (resource === 'notas') {
 			// GET /notas - Obteniendo todas las notas 
 			if (method === 'GET' && !id) {
-				const notes = await leerNotas();
-				return send(200, notes);
+				const notes = await getNotes();
+				send(200, notes);
 			}
 			// GET /notas/:id - Obteniendo una nota por ID
-			if (method === 'GET' && id) {
-				const note = await obtenerNota(id);
-				return note ? send(200, note) : send(404, { error: 'Nota no encontrada' });
+			else if (method === 'GET' && id) {
+				const note = await getNote(id);
+				note ? send(200, note) : send(404, { error: 'Nota no encontrada' });
 			}
 			// POST /notas - Creando una nueva nota
-			if (method === 'POST' && !id) {
+			else if (method === 'POST' && !id) {
 				const dataNote = await parseJsonData(req);
-				const newNote = await agregarNota(dataNote);
-				return send(201, newNote); // 201 Created indica recurso creado exitosamente
+				const newNote = await addNote(dataNote);
+				send(201, newNote); // 201 Created indica recurso creado exitosamente
 			}
 			// PUT /notas/:id - Reemplazando completamente una nota por ID
 			// PATCH /notas/:id - Actualizando parcialmente una nota por ID
-			if ((method === 'PUT' || method === 'PATCH') && id) {
+			else if ((method === 'PUT' || method === 'PATCH') && id) {
 				const changes = await parseJsonData(req);
 				const isReplacement = method === 'PUT';
-				const actualizada = await actualizarNota(id, changes, isReplacement);
-				return actualizada ? send(200, actualizada) : send(404, { error: 'Nota no encontrada' });
+				const updated = await updateNote(id, changes, isReplacement);
+				updated ? send(200, updated) : send(404, { error: 'Nota no encontrada' });
 			}
 			// DELETE /notas/:id - Eliminando una nota por ID
-			if (method === 'DELETE' && id) {
-				const exito = await eliminarNota(id);
-				return exito ? send(204, null) : send(404, { error: 'Nota no encontrada' }); // 204 No Content para eliminación exitosa
+			else if (method === 'DELETE' && id) {
+				const success = await deleteNote(id);
+				success ? send(204, null) : send(404, { error: 'Nota no encontrada' }); // 204 No Content para eliminación exitosa
 			}
 		}
 
 		// Devolviendo 404 si no coincide con ninguna ruta
-		return send(404, { error: 'Ruta no encontrada' });
+		send(404, { error: 'Ruta no encontrada' });
 	} catch (err) {
-		return send(400, { error: 'Error procesando la solicitud', detalle: err.message }); // 400 Bad Request
-	} finally {
-		const responseTime = Date.now() - requestTime.getTime();
-		console.log(
-			c('gray', responseTime + 'ms'),
-			c('green', `Respuesta #${requestId}:`),
-			c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
-		);
+		send(400, { error: 'Error procesando la solicitud', detalle: err.message }); // 400 Bad Request
 	}
+
+	const responseTime = Date.now() - requestTime.getTime();
+	console.log(
+		c('gray', responseTime + 'ms'),
+		c('green', `Respuesta #${requestId}:`),
+		c(res.statusCode < 400 ? 'magenta' : 'red', `[${res.statusCode}]`)
+	);
 });
 
 server.listen(PORT, HOST, () => {
 	const { port } = server.address();
 	console.log(
 		c('magenta', 'API de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/notas`),
-		c('cyan', '\nPrueba la API usando herramientas como Postman o curl.'),
+		c('cyan', '\nPrueba la API usando el archivo "cliente.html" o curl, ejecutando: curl <url>'),
+		'\nOpciones de curl con argumento para definir método, encabezados y datos: -X -H -d',
 		c('gray', `\nDetén la API presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });
 
 /**
  * Apunte #4:
- * Puedes probar esta API usando herramientas como Postman o curl desde la terminal: curl -X <METHOD> <URL> -H <HEADER> -d <DATA>
- * Ej.: 
- * ```bash
- * curl http://localhost:3000/notas
- * -X POST
- * -H "Content-Type: application/json"
- * -d '{"titulo":"Nota","contenido":"Contenido de la nota"}'
- * ```
+ * [*Apunte sobre API*]
  */
 
 ['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {

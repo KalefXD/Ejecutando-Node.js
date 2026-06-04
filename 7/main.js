@@ -85,7 +85,8 @@ app.post('/notas', (req, res) => {
 		// Si la validación falla, devolver error 400 con detalles específicos
 		return res.status(400).json({ 
 			error: 'Datos de entrada inválidos',
-			detalles: z.treeifyError(result.error)
+			detalles: z.treeifyError(result.error),
+
 		});
 	}
 
@@ -188,12 +189,13 @@ app.use((req, res) => {
 		error: 'Endpoint no encontrado',
 		mensaje: `La ruta ${req.method} ${req.originalUrl} no existe`,
 		endpointsDisponibles: [
-			'GET /notas',
-			'GET /notas/:id', 
-			'POST /notas',
-			'PUT /notas/:id',
-			'PATCH /notas/:id',
-			'DELETE /notas/:id'
+			'GET    /notas        - Listar todas las notas',
+			'GET    /notas?tags=X - Filtrar notas por etiqueta',
+			'GET    /notas/:id    - Obtener nota específica',
+			'POST   /notas        - Crear nueva nota',
+			'PUT    /notas/:id    - Reemplazar nota completa',
+			'PATCH  /notas/:id    - Actualizar nota parcialmente',
+			'DELETE /notas/:id    - Eliminar una nota',
 		]
 	});
 });
@@ -214,26 +216,6 @@ app.listen(PORT, HOST, () => {
 	console.log(
 		c('magenta', 'Servidor de Notas con Express iniciado en:'), c('yellow', `http://${HOST}:${PORT}`),
 		c('cyan', '\nPunto de entrada:'), c('yellow', `/notas`),
+		c('gray', `Detén el servidor con Ctrl+C o: kill ${pid}\n`)
 	);
-	console.group(c('green', 'Endpoints API REST disponibles:'));
-	[
-		'GET    /notas        - Listar todas las notas',
-		'GET    /notas?tags=X - Filtrar notas por etiqueta',
-		'GET    /notas/:id    - Obtener nota específica',
-		'POST   /notas        - Crear nueva nota',
-		'PUT    /notas/:id    - Reemplazar nota completa',
-		'PATCH  /notas/:id    - Actualizar nota parcialmente',
-		'DELETE /notas/:id    - Eliminar una nota',
-	].forEach(endPoint => console.log(endPoint));
-	console.groupEnd();
-	console.group(c('cyan', 'Esquema de validación:'));
-	[
-		'title:      string (requerido)',
-		'content:    string (requerido)',
-		'tags:       array de strings (opcional, default: [])',
-		'isArchived: boolean (opcional, default: false)',
-		'priority:   "low"|"medium"|"high" (opcional, default: "medium")',
-	].forEach(endPoint => console.log(endPoint));
-	console.groupEnd();
-	console.log(c('gray', `Detén con Ctrl+C o: kill ${pid}\n`));
 });

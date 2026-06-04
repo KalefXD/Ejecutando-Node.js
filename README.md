@@ -8,8 +8,8 @@ Colección de ejemplos y ejercicios pequeños para aprender de Node.js. Cada car
 3. Listando el contenido de una carpeta
 4. Validando datos con una dependencia
 5. Creando un servidor web HTTP
-6. Creando una API de notas
-7. Creando una APP de notas
+6. Creando una API de notas (En desarrollo)
+7. Creando una APP de notas (En desarrollo)
 
 **Requisitos**
 - Tener instalado Node.js (recomendado v14 o superior).

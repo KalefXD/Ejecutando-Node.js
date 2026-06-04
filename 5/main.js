@@ -104,7 +104,6 @@ const server = http.createServer(async (req, res) => {
 			res.statusCode = 500;
 			res.end('500 - Internal Server Error');
 		}
-
 	}
 
 	// Registrando la respuesta con el tiempo de procesamiento

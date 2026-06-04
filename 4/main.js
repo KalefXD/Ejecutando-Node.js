@@ -37,8 +37,12 @@ const z = await import('zod')
  * Apunte #2:
  * NPM (Node Package Manager) es un registro público de dependencias para JavaScript (https://www.npmjs.com/).
  * Las dependencias son paquetes de código abierto de terceros que se puede gestionar con `npm` y se listan en un archivo `package.json`.
- * `npm` es una utilidad de CLI que instala por defecto Node.js y permite administrar, instalar, actualizar y eliminar dependencias,
+ * `npm` es una utilidad de CLI que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
  * así como ejecutar scripts definidos en `package.json`. Existen algunas alternativas a `npm` como `yarn` o `pnpm`.
+ * 
+ * Ejecutar `npm install` instalará las dependencias listadas en `package.json` y sus versiones especificadas,
+ * en la carpeta `node_modules`, creándola si aún no existe. También creará un archivo `package-lock.json`
+ * para bloquear las versiones exactas de las dependencias instaladas.
  *
  * La dependencia Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
  *
