@@ -36,9 +36,14 @@ const z = await import('zod')
 /**
  * Apunte #2:
  * NPM (Node Package Manager) es un registro público de dependencias para JavaScript (https://www.npmjs.com/).
- * Las dependencias son paquetes de código abierto de terceros que se puede gestionar con `npm` y se listan en un archivo `package.json`.
+ * Las dependencias son paquetes de código abierto de terceros que se puede gestionar con `npm` y se listan en el archivo `package.json`.
+ * `package.json` es el archivo de configuración fundamental de cualquier proyecto de Node.js.
  * `npm` es una utilidad de CLI que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
  * así como ejecutar scripts definidos en `package.json`. Existen algunas alternativas a `npm` como `yarn` o `pnpm`.
+ * 
+ * Node.js surgió antes de que existiera un estándar oficial de módulos para JavaScript.
+ * ES Modules (ESM) es el sistema de módulos estándar de JavaScript (que usa `import` y `export`).
+ * CommonJS (CJS) es el sistema de módulos que Node.js utilizaba (que usa `require()` y `module.exports`).
  * 
  * Ejecutar `npm install` instalará las dependencias listadas en `package.json` y sus versiones especificadas,
  * en la carpeta `node_modules`, creándola si aún no existe. También creará un archivo `package-lock.json`

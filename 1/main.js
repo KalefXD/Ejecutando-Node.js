@@ -29,14 +29,17 @@ import { styleText as c } from 'node:util';
 // Mostrando mensaje de bienvenida en la consola
 global.console.log(
 	c('yellow', '¡Hola mundo!'),
-	`Bienvenido a ${c('green', 'Node.js')}, un entorno de ejecución de JavaScript del lado del servidor.`
+	c('green', 'Node.js'), 'es un entorno de ejecución para JavaScript fuera del navegador.'
 );
+
 /**
  * Apunte #2:
  * `global` es el objeto global de Node.js, el equivalente a `window` en los navegadores, pero exclusivo de Node.
  * `global.console.log` solo demuestra que `console` vive ahí; en la práctica, nadie lo llama así.
  * `globalThis` es la alternativa estándar que funciona en cualquier entorno de JavaScript,
  * y en Node.js apunta al mismo objeto que `global`.
+ * 
+ * Node.js usa el motor V8 de Chrome para ejecutar JavaScript, lo que le permite correr fuera del navegador.
  */
 
 // Mostrando información general del sistema operativo

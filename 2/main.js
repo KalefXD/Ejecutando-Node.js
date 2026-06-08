@@ -61,17 +61,16 @@ try {
 	// Creando un archivo vacío si el archivo no existe
 	console.log(c('cyan', 'El archivo no existe, se creará uno nuevo...'));
 
-	try {
-		await fs.writeFile(filePath, '');
-		console.log(c('green', 'Archivo creado:'), c('yellow', path.basename(filePath)));
-	} catch (err) {
-		console.error(c('red', 'Error al crear el archivo:'), err.message);
-		exit(1);
-	}
+	await fs.writeFile(filePath, '')
+		.catch(err => {
+			console.error(c('red', 'Error al crear el archivo:'), err.message);
+			exit(1);
+		});
+	console.log(c('green', 'Archivo creado:'), c('yellow', path.basename(filePath)));
 }
 
 // Añadiendo el texto proporcionado al final del archivo
-await fs.appendFile(filePath, textArg + '\n')
+await fs.appendFile(filePath, textArg)
 	.then(() => console.log(c('cyan', 'Texto añadido a:'), c('yellow', filePath)))
 	.catch(err => console.error(c('red', 'Error al escribir en el archivo:'), err.message));
 
@@ -79,4 +78,4 @@ await fs.appendFile(filePath, textArg + '\n')
 fs.readFile(filePath, 'utf8')
 	.then(data => console.log(c('magenta', 'Contenido del archivo:'), '\n' + data))
 	.catch(err => console.error(c('red', 'Error al leer el archivo:'), err.message))
-	.finally(() => console.log(c('yellow', 'Proceso terminado.')));
+	.finally(() => console.log(c('green', 'Fin del contenido.')));

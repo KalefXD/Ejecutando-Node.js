@@ -30,9 +30,7 @@ fs.readdir(folder)
 		/**
 		 * Apuntes #1:
 		 * Se usa una función `async` dentro de `.then()` para poder usar `await` con `fs.stat()`.
-		 *
 		 * Marcar la función como `async` hace que retorne automáticamente una Promise.
-		 * Eso significa que si algo interno lanza un error, se propaga hacia el `.catch()` al final de la cadena.
 		 * Sin `async`, el `await` no sería válido sintácticamente, y cualquier error asíncrono interno
 		 * quedaría fuera de la cadena de promesas, y el `.catch()` nunca lo capturaría.
 		 */

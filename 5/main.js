@@ -68,8 +68,8 @@ const server = http.createServer(async (req, res) => {
 	const { method, url } = req;
 
 	// Registrando cada petición en la consola con su hora de llegada
-	const requestId = ++requestCount;
 	const requestTime = new Date();
+	const requestId = ++requestCount;
 	console.log(
 		c('gray', requestTime.toLocaleString()),
 		c('green', `Petición #${requestId}:`),
