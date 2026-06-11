@@ -41,19 +41,11 @@ const z = await import('zod')
  * `npm` es una utilidad de CLI que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
  * así como ejecutar scripts definidos en `package.json`. Existen algunas alternativas a `npm` como `yarn` o `pnpm`.
  * 
- * Node.js surgió antes de que existiera un estándar oficial de módulos para JavaScript.
- * ES Modules (ESM) es el sistema de módulos estándar de JavaScript (que usa `import` y `export`).
- * CommonJS (CJS) es el sistema de módulos que Node.js utilizaba (que usa `require()` y `module.exports`).
- * 
  * Ejecutar `npm install` instalará las dependencias listadas en `package.json` y sus versiones especificadas,
  * en la carpeta `node_modules`, creándola si aún no existe. También creará un archivo `package-lock.json`
  * para bloquear las versiones exactas de las dependencias instaladas.
  *
  * La dependencia Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
- *
- * Se recomienda leer la documentación de cada dependencia que aparezca en este repositorio para entender su propósito,
- * cómo usarla y sus limitaciones, ya que no habrá apuntes detallados sobre cada una de ellas en los scripts siguientes,
- * sino solo las partes relevantes para cada script, y en algunos casos ni siquiera eso.
  *
  * La verificación de instalación con `await import()` es un recurso didáctico, no una práctica común.
  * En proyectos reales, se asume que las dependencias del `package.json` ya fueron instaladas con `npm install`.

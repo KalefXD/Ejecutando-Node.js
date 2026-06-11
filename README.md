@@ -19,7 +19,7 @@ Colección de ejemplos y ejercicios pequeños para aprender de Node.js. Cada car
 1. En la terminal, muévete a la carpeta del ejemplo. Por ejemplo:
 
 	```bash
-	cd "1. Mostrando información del SO"
+	cd "1"
 	```
 
 2. Ejecuta el script principal con Node:

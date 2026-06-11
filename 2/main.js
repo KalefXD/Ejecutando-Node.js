@@ -78,4 +78,4 @@ await fs.appendFile(filePath, textArg)
 fs.readFile(filePath, 'utf8')
 	.then(data => console.log(c('magenta', 'Contenido del archivo:'), '\n' + data))
 	.catch(err => console.error(c('red', 'Error al leer el archivo:'), err.message))
-	.finally(() => console.log(c('green', 'Fin del contenido.')));
+	.finally(() => console.log(c('green', 'Proceso completado.')));

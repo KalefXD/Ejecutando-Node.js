@@ -23,7 +23,9 @@ import {
 
 /**
  * Apunte #1:
- * [*Apunte sobre los módulos url y stream/consumers*]
+ * El módulo `node:stream/consumers` ofrece funciones que consumen un flujo de datos completo
+ * y lo convierten en un formato útil. `json()` lee el cuerpo de la petición como un flujo,
+ * espera a que llegue completo y lo parsea como JSON, equivalente a hacer `JSON.parse(await text())`.
  * 
  * REST (Representational State Transfer) es un estilo arquitectónico que usa métodos HTTP estándar
  * para operaciones CRUD: Create (POST), Read (GET), Update (PUT/PATCH) y Delete (DELETE).
@@ -37,7 +39,11 @@ const HOST = process.env.HOST ?? 'localhost';
 
 /**
  * Apunte #2:
- * [*Apunte sobre el archivo .env*]
+ * Los archivos `.env` se usan para separar la configuración del código fuente.
+ * Centralizar ahí variables como puertos, hosts, claves de API o credenciales de base de datos
+ * evita que esos valores queden expuestos en el repositorio.
+ * Por eso es habitual añadir `.env` al `.gitignore` y compartir en su lugar un `.env.example`
+ * con los nombres de las variables pero sin sus valores reales.
  */
 
 // Limitando el cuerpo a 1MB para prevenir ataques
@@ -65,7 +71,10 @@ const readBody = async (req) => {
 
 /**
  * Apunte #3:
- * [*Apunte sobre manejo de cuerpo de peticiones*]
+ * Limitar el tamaño del cuerpo antes de leerlo protege el servidor de peticiones maliciosas
+ * que envíen payloads enormes para agotar la memoria o bloquear el proceso.
+ * `json()` de `node:stream/consumers` consume el flujo completo de la petición internamente,
+ * por lo que validar el `Content-Length` antes de llamarla es la única oportunidad de cortar a tiempo.
  */
 
 let requestCount = 0;

@@ -4,11 +4,266 @@
 	<meta charset="UTF-8">
 	<title>Cliente - API de Notas</title>
 	<style>
-		:root { color-scheme: light dark; }
-		body { font-family: system-ui, sans-serif; }
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+
+		:root { color-scheme: dark; scrollbar-width: thin; scrollbar-color: #2c2c2a #1a1a18; }
+
+		body {
+			max-inline-size: 580px;
+			min-block-size: 100dvb;
+			padding: 2rem 1rem;
+			margin-inline: auto;
+			font-family: system-ui, sans-serif;
+			color: #e8e6e0;
+			background: #1a1a18;
+		}
+
+		.header { display: flex; justify-content: space-between; align-items: center; }
+
+		h1 { font-size: 18px; font-weight: 500; color: #e8e6e0; }
+
+		.url-bar { display: flex; gap: 8px; }
+
+		.url-bar input {
+			padding: 8px 12px;
+			border: 1px solid #444441;
+			border-radius: 8px;
+			font-family: monospace;
+			font-size: 13px;
+			color: #e8e6e0;
+			outline: none;
+			background: #2c2c2a;
+
+			&:focus { border-color: #888780; }
+		}
+
+		.url-bar button {
+			padding: 8px 14px;
+			border: 1px solid #444441;
+			border-radius: 8px;
+			font-family: inherit;
+			font-size: 13px;
+			white-space: nowrap;
+			color: #e8e6e0;
+			cursor: pointer;
+			background: #2c2c2a;
+
+			&:hover { background: #3a3a38; }
+			&:active { scale: 0.98; }
+		}
+
+		form { 
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-block: 1.5rem;
+
+			/* El atributo `rows` del textarea no funciona con `field-sizing: content` */
+			textarea { box-sizing: content-box; min-block-size: 2lh; field-sizing: content; }
+		}
+
+		form :is(input, textarea) {
+			padding: 10px 12px;
+			border: 1px solid #444441;
+			border-radius: 8px;
+			font-family: inherit;
+			font-size: 14px;
+			color: #e8e6e0;
+			resize: none;
+			outline: none;
+			background: #2c2c2a;
+
+			&::placeholder { color: #888780; }
+			&:focus { border-color: #888780; }
+		}
+
+		form button {
+			align-self: end;
+			padding: 8px 16px;
+			border: 1px solid #444441;
+			border-radius: 8px;
+			font-family: inherit;
+			font-size: 14px;
+			color: #e8e6e0;
+			cursor: pointer;
+			background: #2c2c2a;
+
+			&:hover { background: #3a3a38; }
+			&:active { scale: 0.98; }
+		}
+
+		.section-label {
+			display: flex;
+			justify-content: space-between;
+			align-items: end;
+			margin-block-end: 10px;
+			font-size: 11px;
+			letter-spacing: 1px;
+			color: #5F5E5A;
+			text-transform: uppercase;
+		}
+
+		#statusApi {
+			font-size: 8px;
+			color: #888780;
+
+			&.ok { color: #5DCAA5; }
+			&.err { color: #F09595; }
+		}
+
+		#list { display: grid; gap: 8px; }
+
+		.note {
+			position: relative;
+			display: flex;
+			justify-content: space-between;
+			align-items: start;
+			gap: 12px;
+			padding: 12px 14px;
+			border: 1px solid #444441;
+			border-radius: 8px;
+			background: #2c2c2a;
+		}
+
+		.note-content { word-break: break-word; }
+
+		.note-title {
+			padding-inline-end: 30px;
+			margin-block-end: 2px;
+			font-size: 14px;
+			font-weight: 500;
+			color: #e8e6e0;
+		}
+
+		.note-body { font-size: 13px; white-space: pre-wrap; color: #888780; }
+		.note-date { margin-block-start: 6px; font-size: 11px; color: #5F5E5A; }
+
+		.delete-btn {
+			position: absolute;
+			inset-inline-end: 14px;
+			border: none;
+			line-height: 1;
+			font-size: 18px;
+			color: #5F5E5A;
+			cursor: pointer;
+			background: none;
+
+			&:hover { color: #F09595; }
+		}
+
+		.empty { padding-block: 1rem; font-size: 13px; color: #5F5E5A; }
 	</style>
 </head>
-<body>
-	<!-- Falta -->
+<body> 
+	<div class="header">
+		<h1>Notas</h1>
+
+		<div class="url-bar">
+			<input id="baseUrl" type="text" value="http://localhost:3000" spellcheck="false" />
+			<button onclick="connect()">Conectar</button>
+		</div>
+	</div>
+
+	<form>
+		<input id="title" type="text" placeholder="Título" required />
+		<textarea id="body" rows="2" placeholder="Contenido"></textarea>
+		<button onclick="createNote()">Añadir nota</button>
+	</form>
+
+	<div class="section-label">
+		Lista
+		<span id="statusApi"></span>
+	</div>
+
+	<div id="list">
+		<em class="empty">Introduce la URL de la API y pulsa Conectar.</em>
+	</div>
+
+	<script>
+		let BASE = '';
+
+		function setStatus(msg, type = '') {
+			statusApi.textContent = msg;
+			statusApi.className = 'status ' + type;
+			if (type === 'ok') setTimeout(() => { statusApi.textContent = ''; statusApi.className = 'status'; }, 3000);
+		}
+
+		function formatDate(iso) {
+			return new Date(iso).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+		}
+
+		function esc(str) {
+			return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		}
+
+		function connect() {
+			const raw = baseUrl.value.trim().replace(/\/$/, '');
+			if (!raw) { setStatus('Introduce una URL válida.', 'err'); return; }
+			BASE = raw;
+			setStatus('');
+			loadNotes();
+		}
+
+		async function loadNotes() {
+			if (!BASE) return;
+			try {
+				const res = await fetch(`${BASE}/notas`);
+				if (!res.ok) throw new Error();
+				render(await res.json());
+			} catch {
+				setStatus('No se pudo conectar con la API.', 'err');
+				list.innerHTML = '<em class="empty">Sin conexión.</em>';
+			}
+		}
+
+		function render(notes) {
+			if (!notes.length) {
+				list.innerHTML = '<em class="empty">No hay notas aún.</em>';
+				return;
+			}
+			list.innerHTML = notes.map(n => `
+					<div class="note" id="note-${n.id}">
+						<div class="note-content">
+							<div class="note-title">${esc(n.title)}</div>
+							${n.body ? `<div class="note-body">${esc(n.body)}</div>` : ''}
+							<div class="note-date">${formatDate(n.createdAt)}</div>
+						</div>
+						<button class="delete-btn" aria-label="Eliminar nota" onclick="deleteNote('${n.id}')">✕</button>
+					</div>
+				`).join('');
+		}
+
+		async function createNote() {
+			if (!BASE) { setStatus('Primero conecta con la API.', 'err'); return; }
+			const titleValue = title.value.trim();
+			const bodyValue = body.value.trim();
+			if (!titleValue) { setStatus('El título es obligatorio.', 'err'); return; }
+			try {
+				const res = await fetch(`${BASE}/notas`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ titleValue, bodyValue })
+				});
+				if (!res.ok) throw new Error();
+				title.value = '';
+				body.value = '';
+				setStatus('Nota añadida.', 'ok');
+				loadNotes();
+			} catch {
+				setStatus('Error al crear la nota.', 'err');
+			}
+		}
+
+		async function deleteNote(id) {
+			try {
+				const res = await fetch(`${BASE}/notas/${id}`, { method: 'DELETE' });
+				if (!res.ok) throw new Error();
+				setStatus('Nota eliminada.', 'ok');
+				loadNotes();
+			} catch {
+				setStatus('Error al eliminar la nota.', 'err');
+			}
+		}
+	</script>
 </body>
 </html>
