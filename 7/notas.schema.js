@@ -16,12 +16,12 @@ export const noteBaseSchema = z.object({
 		.trim(),
 
 	tags: z.array(
-		z.string()
-			.min(1, 'Las etiquetas no pueden estar vacías')
-			.max(50, 'Las etiquetas no pueden exceder 50 caracteres')
-			.trim()
-			.toLowerCase() // Normalizar a minúsculas para búsquedas consistentes
-	).default([]), // Array vacío por defecto si no se especifica
+			z.string()
+				.min(1, 'Las etiquetas no pueden estar vacías')
+				.max(50, 'Las etiquetas no pueden exceder 50 caracteres')
+				.trim()
+				.toLowerCase() // Normalizar a minúsculas para búsquedas consistentes
+		).default([]), // Array vacío por defecto si no se especifica
 	
 	isArchived: z.boolean()
 		.default(false), // Por defecto las notas no están archivadas

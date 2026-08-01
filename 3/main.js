@@ -1,12 +1,4 @@
-/**
- * 3. Listando el contenido de una carpeta
- * 
- * En este script se lista el contenido de un directorio mostrando información de cada archivo.
- * Se lee con `fs.readdir()`, se recorren sus entradas y se consultan los metadatos con `fs.stat()`,
- * manejando los errores entrada por entrada para no interrumpir el listado completo.
- * El lector verá cómo usar `async/await` dentro de una cadena de promesas,
- * inspeccionar metadatos del sistema de archivos y construir una salida tabular en consola.
- */
+// 3. Listando el contenido de una carpeta
 
 import path from 'node:path';
 import fs from 'node:fs/promises';
@@ -25,82 +17,85 @@ if (!process.argv[2]) console.log(
 
 // Leyendo el contenido del directorio
 fs.readdir(folder)
-	.then(async files => {
-
-		/**
-		 * Apuntes #1:
-		 * Se usa una función `async` dentro de `.then()` para poder usar `await` con `fs.stat()`.
-		 * Marcar la función como `async` hace que retorne automáticamente una Promise.
-		 * Sin `async`, el `await` no sería válido sintácticamente, y cualquier error asíncrono interno
-		 * quedaría fuera de la cadena de promesas, y el `.catch()` nunca lo capturaría.
-		 */
-
-		// Mostrando encabezado con la ruta absoluta del directorio
-		console.group(
-			c('magenta', 'Contenido del directorio:'),
-			c('yellow', path.resolve(folder))
-		);
-
-		// Informando y saliendo si el directorio está vacío
-		if (files.length === 0) {
-			console.groupEnd();
-			console.log(c('cyan', 'El directorio está vacío.'));
-			process.exit();
-		}
-
-		// Encontrando el ancho máximo de los nombres para alinear la salida en consola
-		const maxLength = Math.max(...files.map(f => f.length));
-
-		// Leyendo en paralelo los metadatos de cada archivo
-		const entries = await Promise.all(
-			// Creando un array de promesas para cada archivo
-			files.map(async (file, i) => {
-				// Uniendo la ruta del directorio con el nombre del archivo
-				const fullPath = path.join(folder, file);
-
-				// Obteniendo información del archivo
-				return fs.stat(fullPath)
-					.then(stats => {
-						// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
-						const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
-						const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
-						const fileSize = fileType == 'F' ? (stats.size / 1024).toFixed(3) + ' KB' : '---';
-						const fileModified = stats.mtime.toLocaleString();
-
-						// Devolviendo un array de texto formateado para cada columna, con colores y alineación
-						return [
-							c(fileTypeColor, fileType),
-							c('cyan', file.padEnd(maxLength)),
-							c('green', fileSize.padStart(12)),
-							c('yellow', fileModified)
-						];
-					})
-					.catch(() => {
-						// Devolviendo una fila de error si no se pudo obtener la información del archivo
-						return [
-							c('red', 'E'),
-							c('cyan', file.padEnd(maxLength)),
-							c('red', 'ERROR'.padStart(12)),
-							c('red', 'Acceso denegado')
-						];
-					});
-			})
-		);
-
-		// Imprimiendo cada entrada formateada en consola
-		for (const entry of entries) {
-			console.log(...entry);
-		}
-
-		/**
-		 * Apunte #2:
-		 * Si se necesita consultar los metadatos de un enlace simbólico
-		 * en lugar del archivo al que apunta, se usa `fs.lstat()`.
-		 */
-
-		console.groupEnd();
-	})
+	.then(showDirFiles)
 	.catch(err => {
 		console.error(c('red', 'Error al leer el directorio:'), err.message);
 		process.exit(1);
 	});
+
+/**
+ * Apunte #1:
+ * Se usa una función `async` dentro de `.then()` para poder utilizar `await`.
+ * Una función `async` siempre devuelve una Promise.
+ * Si ocurre un error durante un `await`, la Promise se rechaza y el `.catch()`
+ * de la cadena puede capturarlo.
+ * Sin `async`, `await` no es válido sintácticamente y `.then()` no esperaría
+ * automáticamente el trabajo asíncrono realizado dentro de la función.
+ */
+
+async function showDirFiles(files) {
+	// Mostrando encabezado con la ruta absoluta del directorio
+	console.group(
+		c('magenta', 'Contenido del directorio:'),
+		c('yellow', path.resolve(folder))
+	);
+
+	// Informando y saliendo si el directorio está vacío
+	if (files.length === 0) {
+		console.groupEnd();
+		console.log(c('cyan', 'El directorio está vacío.'));
+		process.exit();
+	}
+
+	// Encontrando el ancho máximo de los nombres para alinear la salida en consola
+	const maxLength = Math.max(...files.map(f => f.length));
+
+	// Leyendo en paralelo los metadatos de cada archivo
+	const entries = await Promise.all(
+		// Creando un array de promesas para cada archivo
+		files.map(async (file, i) => {
+			// Uniendo la ruta del directorio con el nombre del archivo
+			const fullPath = path.join(folder, file);
+
+			/**
+			 * Apunte #2:
+			 * Si se necesita consultar los metadatos de un enlace simbólico
+			 * en lugar del archivo al que apunta, se usa `fs.lstat()`.
+			 */
+
+			// Obteniendo información del archivo
+			return fs.stat(fullPath)
+				.then(stats => {
+					// Determinando tipo, tamaño y fecha de modificación a partir de las estadísticas
+					const fileType = stats.isFile() ? 'F' : stats.isDirectory() ? 'D' : 'O';
+					const fileTypeColor = fileType == 'F' ? 'green' : fileType == 'D' ? 'blue' : 'red';
+					const fileSize = fileType == 'F' ? (stats.size / 1024).toFixed(3) + ' KB' : '---';
+					const fileModified = stats.mtime.toLocaleString();
+
+					// Devolviendo un array de texto formateado para cada columna, con colores y alineación
+					return [
+						c(fileTypeColor, fileType),
+						c('cyan', file.padEnd(maxLength)),
+						c('green', fileSize.padStart(12)),
+						c('yellow', fileModified)
+					];
+				})
+				.catch(() => {
+					// Devolviendo una fila de error si no se pudo obtener la información del archivo
+					return [
+						c('red', 'E'),
+						c('cyan', file.padEnd(maxLength)),
+						c('red', 'ERROR'.padStart(12)),
+						c('red', 'Acceso denegado')
+					];
+				});
+		})
+	);
+
+	// Imprimiendo cada entrada formateada en consola
+	for (const entry of entries) {
+		console.log(...entry);
+	}
+
+	console.groupEnd();
+}

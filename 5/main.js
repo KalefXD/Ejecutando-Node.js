@@ -1,27 +1,15 @@
 /**
  * 5. Creando un servidor web HTTP
  *
- * En este script se crea un servidor web HTTP que sirve archivos estáticos desde una carpeta pública.
- * Se trabaja con rutas, tipos MIME, manejo de errores HTTP y señales del sistema operativo.
- * El lector verá cómo funciona un servidor web básico desde adentro: recibir una petición,
- * localizar el archivo en disco, asignarle el tipo correcto y enviarlo como respuesta al navegador.
+ * Apunte #1:
+ * El módulo `node:http` permite crear y manejar servidores y clientes HTTP.
+ * HTTP (Hypertext Transfer Protocol) es el protocolo de comunicación entre los navegadores y servidores web.
  */
 
 import http from 'node:http';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { styleText as c } from 'node:util';
-
-/**
- * Apunte #1:
- * El módulo `node:http` permite crear y manejar servidores y clientes HTTP.
- * HTTP (Hypertext Transfer Protocol) es el protocolo de comunicación entre los navegadores y servidores web.
- */
-
-// Configurando la carpeta pública y las variables del servidor
-const PUBLIC_DIR = path.resolve(process.argv[2] ?? '.');
-const PORT = process.env.PORT ?? 0;
-const HOST = process.env.HOST ?? 'localhost';
 
 /**
  * Apunte #2:
@@ -31,11 +19,23 @@ const HOST = process.env.HOST ?? 'localhost';
  * Puedes definir estas variables al ejecutar el script: `PORT=3000 HOST=0.0.0.0 node main.js carpeta`.
  */
 
+// Configurando la carpeta pública y las variables del servidor
+const PUBLIC_DIR = path.resolve(process.argv[2] ?? '.');
+const PORT = process.env.PORT ?? 0;
+const HOST = process.env.HOST ?? 'localhost';
+
 if (!process.argv[2]) console.log(
 	c('red', 'Uso: node main.js <carpeta>'),
 	c('green', '[opcional: directorio actual]'),
 	'\nDescripción: Inicia un servidor HTTP de la carpeta especificada.'
 );
+
+/**
+ * Apunte #3:
+ * Los tipos MIME le indican al navegador cómo interpretar el contenido de un archivo (ej.: `text/html` para una página web).
+ * `application/octet-stream` es el tipo genérico para datos binarios desconocidos, lo que usualmente provoca su descarga.
+ * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (tildes, ñ) se muestren correctamente.
+ */
 
 // Función para obtener el tipo MIME según la extensión del archivo
 function getMimeType(filePath) {
@@ -48,20 +48,27 @@ function getMimeType(filePath) {
 		'.mp4': 'video/mp4', '.mp3': 'audio/mpeg', '.wav': 'audio/wav'
 	};
 	const mimeType = mimeTypes[ext] ?? 'application/octet-stream';
-	// Tipos de archivos que deben incluir `charset=utf-8`
+	// Tipos de archivos que deben incluir UTF8
 	const textTypes = ['.txt', '.html', '.css', '.js', '.json', '.svg', '.xml'];
 	return textTypes.includes(ext) ? mimeType + '; charset=utf-8' : mimeType;
 }
 
-/**
- * Apunte #3:
- * Los tipos MIME le indican al navegador cómo interpretar el contenido de un archivo (ej.: `text/html` para una página web).
- * `application/octet-stream` es el tipo genérico para datos binarios desconocidos, lo que usualmente provoca su descarga.
- * Añadir `charset=utf-8` a los tipos de texto asegura que los caracteres especiales (tildes, ñ) se muestren correctamente.
- */
-
 // Llevando el conteo de peticiones
 let requestCount = 0;
+
+/**
+ * Apunte #4:
+ * `http.createServer()` crea un servidor HTTP y recibe un callback que se ejecuta con cada petición.
+ * El callback recibe dos objetos: `req` (request), con información sobre la petición del cliente
+ * (método, URL, cabeceras, etc.), y `res` (response), para construir y enviar la respuesta.
+ *
+ * Los códigos de estado de respuesta HTTP indican el estado de una petición HTTP.
+ * Los códigos se agrupan en categorías: Respuestas informativas (1xx), Respuestas exitosas (2xx),
+ * Redirecciones (3xx), Errores del cliente (4xx) y Errores del servidor (5xx).
+ * Estos códigos estan definidos por el IETF en los RFC de HTTP, alistadas oficialmente por el IANA.
+ * Aunque pueden usarse códigos personalizados, es recomendable seguir los estándares
+ * para asegurar la compatibilidad con clientes y herramientas.
+ */
 
 // Creando el servidor HTTP
 const server = http.createServer(async (req, res) => {
@@ -115,20 +122,6 @@ const server = http.createServer(async (req, res) => {
 	);
 });
 
-/**
- * Apunte #4:
- * `http.createServer()` crea un servidor HTTP y recibe un callback que se ejecuta con cada petición.
- * El callback recibe dos objetos: `req` (request), con información sobre la petición del cliente
- * (método, URL, cabeceras, etc.), y `res` (response), para construir y enviar la respuesta.
- *
- * Los códigos de estado de respuesta HTTP indican el estado de una petición HTTP.
- * Los códigos se agrupan en categorías: Respuestas informativas (1xx), Respuestas exitosas (2xx),
- * Redirecciones (3xx), Errores del cliente (4xx) y Errores del servidor (5xx).
- * Estos códigos estan definidos por el IETF en los RFC de HTTP, alistadas oficialmente por el IANA.
- * Aunque pueden usarse códigos personalizados, es recomendable seguir los estándares
- * para asegurar la compatibilidad con clientes y herramientas.
- */
-
 // Iniciando el servidor para que escuche peticiones
 server.listen(PORT, HOST, () => {
 	// Mostrando información del servidor al iniciar
@@ -139,15 +132,6 @@ server.listen(PORT, HOST, () => {
 		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });
-
-// Manejando el cierre del servidor de forma controlada ante señales del sistema operativo
-['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
-	console.log('\nCerrando servidor...');
-	server.close(() => {
-		console.log(c('green', 'Servidor cerrado.'));
-		process.exit(0);
-	});
-}));
 
 /**
  * Apunte #4:
@@ -162,3 +146,12 @@ server.listen(PORT, HOST, () => {
  * y ejecuta el handler una segunda vez. Además, `exit` solo admite código síncrono,
  * por lo que operaciones como `server.close()` no tendrían tiempo de completarse ahí.
  */
+
+// Manejando el cierre del servidor de forma controlada ante señales del sistema operativo
+['SIGINT', 'SIGTERM'].forEach(signal => process.on(signal, () => {
+	console.log('\nCerrando servidor...');
+	server.close(() => {
+		console.log(c('green', 'Servidor cerrado.'));
+		process.exit(0);
+	});
+}));

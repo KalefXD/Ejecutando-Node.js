@@ -1,18 +1,6 @@
 /**
  * 2. Añadiendo texto a un archivo
  *
- * En este script se usa el sistema de archivos de Node para añadir un texto al final de un archivo.
- * Se leen argumentos desde la línea de comandos y se encadenan promesas con `.then()` y `.catch()`.
- * El lector verá cómo verificar si un archivo existe, crearlo si no, añadirle contenido
- * y leerlo al final para confirmar el resultado.
- */
-
-import { argv, exit } from 'node:process';
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import { styleText as c } from 'node:util';
-
-/**
  * Apunte #1:
  * El módulo `node:process` permite acceder a información y controlar el proceso en ejecución.
  * El módulo `node:path` proporciona utilidades para trabajar con rutas de archivos y directorios de forma multiplataforma.
@@ -21,8 +9,10 @@ import { styleText as c } from 'node:util';
  * lo que facilita el manejo de operaciones asíncronas sin anidar callbacks.
  */
 
-// Extrayendo argumentos de la línea de comandos
-const [,, fileArg, textArg] = argv;
+import { argv, exit } from 'node:process';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { styleText as c } from 'node:util';
 
 /**
  * Apunte #2:
@@ -34,6 +24,9 @@ const [,, fileArg, textArg] = argv;
  * En este ejemplo no se usa para mantener el script más simple.
  */
 
+// Extrayendo argumentos de la línea de comandos
+const [,, fileArg, textArg] = argv;
+
 // Mostrando mensaje de uso y terminando el proceso si no se pasan los argumentos requeridos
 if (!fileArg || !textArg) {
 	console.error(
@@ -44,15 +37,15 @@ if (!fileArg || !textArg) {
 	exit(1);
 }
 
-// Convirtiendo la ruta del archivo a una ruta absoluta
-const filePath = path.resolve(fileArg);
-
 /**
  * Apunte #3:
  * `path.resolve()` convierte una ruta relativa en absoluta usando `process.cwd()` como base,
  * que es el directorio desde donde se ejecutó el comando, no necesariamente donde está el script.
  * Esto evita comportamientos inesperados cuando el script se llama desde otro directorio.
  */
+
+// Convirtiendo la ruta del archivo a una ruta absoluta
+const filePath = path.resolve(fileArg);
 
 try {
 	// Verificando si se tiene acceso al archivo

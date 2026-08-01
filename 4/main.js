@@ -1,37 +1,14 @@
 /**
  * 4. Validando datos con una dependencia
  * 
- * En este script se verifica la instalación de Zod y se validan datos de usuario con sus esquemas.
- * Se crea una pequeña CLI interactiva con `node:readline` que solicita datos al usuario
- * y los valida contra un esquema definido con Zod.
- * El lector verá cómo gestionar paquetes externos, definir esquemas de validación,
- * leer entradas desde la consola y manejar errores estructurados.
- */
-
-import readline from 'node:readline';
-import { styleText as c } from 'node:util';
-
-/**
  * Apunte #1:
  * El módulo `node:readline` permite leer y procesar entradas de texto línea por línea desde la consola o desde un flujo de datos.
  * Esto facilita la creación de interfaces de línea de comandos (CLI) interactivas.
  * Puede leer datos desde un flujo de entrada (como `stdin` para el teclado) y escribirlos en un flujo de salida (como `stdout`).
  */
 
-// Verificando si la dependencia "zod" está instalada
-const z = await import('zod')
-	.then(module => {
-		console.log(c('gray', 'La dependencia "zod" está instalada.'));
-		return module;
-	})
-	.catch(() => {
-		console.error(
-			c('red', 'Error: La dependencia "zod" no está instalada.'),
-			'\nInfo: Este script requiere la dependencia "zod" para validar datos',
-			c('red', '\nEjecuta: npm install zod')
-		);
-		process.exit(1);
-	});
+import readline from 'node:readline';
+import { styleText as c } from 'node:util';
 
 /**
  * Apunte #2:
@@ -52,6 +29,21 @@ const z = await import('zod')
  * A partir de ahora, deberás instalarlas por tu cuenta antes de ejecutar los scripts siguientes.
  */
 
+// Verificando si la dependencia "zod" está instalada
+const z = await import('zod')
+	.then(module => {
+		console.log(c('gray', 'La dependencia "zod" está instalada.'));
+		return module;
+	})
+	.catch(() => {
+		console.error(
+			c('red', 'Error: La dependencia "zod" no está instalada.'),
+			'\nInfo: Este script requiere la dependencia "zod" para validar datos',
+			c('red', '\nEjecuta: npm install zod')
+		);
+		process.exit(1);
+	});
+
 // Creando una interfaz readline usando la entrada/salida estándar
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -62,6 +54,12 @@ const rl = readline.createInterface({
 function ask(question) {
 	return new Promise(resolve => rl.question(c('cyan', question), resolve));
 }
+
+/**
+ * Apunte #3:
+ * Los esquemas de Zod definen la estructura y las reglas que deben cumplir los datos.
+ * `z.coerce` intenta convertir un valor al tipo esperado (ej: el string "50" al number `50`) antes de validar.
+ */
 
 // Definiendo esquema de validación para un objeto de usuario con Zod
 const UserSchema = z.object({
@@ -75,13 +73,6 @@ const UserSchema = z.object({
 		['sí', 'si', 'true', '1'].includes(value.toLowerCase())
 	).optional()
 });
-
-/**
- * Apunte #3:
- * Los esquemas de Zod definen la estructura y las reglas que deben cumplir los datos.
- * `z.coerce` intenta convertir un valor al tipo esperado (ej: el string "50" al number `50`) antes de validar.
- */
-
 // Solicitando datos al usuario y validándolos con el esquema definido
 console.log(c('magenta', 'Por favor, ingresa los datos del usuario:'));
 try {

@@ -18,7 +18,7 @@
 			background: #1a1a18;
 		}
 
-		.header { display: flex; justify-content: space-between; align-items: center; }
+		header { display: flex; justify-content: space-between; align-items: center; }
 
 		h1 { font-size: 18px; font-weight: 500; color: #e8e6e0; }
 
@@ -103,7 +103,7 @@
 			text-transform: uppercase;
 		}
 
-		#statusApi {
+		#apiStatus {
 			font-size: 8px;
 			color: #888780;
 
@@ -115,34 +115,26 @@
 
 		.note {
 			position: relative;
-			display: flex;
-			justify-content: space-between;
-			align-items: start;
-			gap: 12px;
 			padding: 12px 14px;
 			border: 1px solid #444441;
 			border-radius: 8px;
+    		word-break: break-word;
 			background: #2c2c2a;
 		}
 
-		.note-content { word-break: break-word; }
+		.note-header { display: flex; gap: 14px; justify-content: space-between; }
 
 		.note-title {
-			padding-inline-end: 30px;
 			margin-block-end: 2px;
 			font-size: 14px;
 			font-weight: 500;
 			color: #e8e6e0;
 		}
 
-		.note-body { font-size: 13px; white-space: pre-wrap; color: #888780; }
-		.note-date { margin-block-start: 6px; font-size: 11px; color: #5F5E5A; }
-
-		.delete-btn {
-			position: absolute;
-			inset-inline-end: 14px;
+		.note-delete-btn {
+			align-self: start;
 			border: none;
-			line-height: 1;
+			line-height: 1.25;
 			font-size: 18px;
 			color: #5F5E5A;
 			cursor: pointer;
@@ -151,28 +143,31 @@
 			&:hover { color: #F09595; }
 		}
 
+		.note-body { font-size: 13px; white-space: pre-wrap; color: #888780; }
+		.note-date { margin-block-start: 6px; font-size: 11px; color: #5F5E5A; }
+
 		.empty { padding-block: 1rem; font-size: 13px; color: #5F5E5A; }
 	</style>
 </head>
 <body> 
-	<div class="header">
+	<header>
 		<h1>Notas</h1>
 
 		<div class="url-bar">
-			<input id="baseUrl" type="text" value="http://localhost:3000" spellcheck="false" />
+			<input id="baseUrl" type="url" value="http://localhost:3000" spellcheck="false" />
 			<button onclick="connect()">Conectar</button>
 		</div>
-	</div>
+	</header>
 
-	<form>
-		<input id="title" type="text" placeholder="Título" required />
-		<textarea id="body" rows="2" placeholder="Contenido"></textarea>
-		<button onclick="createNote()">Añadir nota</button>
+	<form onsubmit="handleFormSubmit(event)" autocomplete="off">
+		<input id="titleInput" placeholder="Título" required />
+		<textarea id="bodyInput" rows="2" placeholder="Contenido"></textarea>
+		<button>Añadir nota</button>
 	</form>
 
 	<div class="section-label">
 		Lista
-		<span id="statusApi"></span>
+		<span id="apiStatus"></span>
 	</div>
 
 	<div id="list">
@@ -182,10 +177,15 @@
 	<script>
 		let BASE = '';
 
+		function handleFormSubmit(event) {
+			event.preventDefault();
+			createNote();
+		}
+
 		function setStatus(msg, type = '') {
-			statusApi.textContent = msg;
-			statusApi.className = 'status ' + type;
-			if (type === 'ok') setTimeout(() => { statusApi.textContent = ''; statusApi.className = 'status'; }, 3000);
+			apiStatus.textContent = msg;
+			apiStatus.className = 'status ' + type;
+			if (type === 'ok') setTimeout(() => { apiStatus.textContent = ''; apiStatus.className = 'status'; }, 3000);
 		}
 
 		function formatDate(iso) {
@@ -223,30 +223,30 @@
 			}
 			list.innerHTML = notes.map(n => `
 					<div class="note" id="note-${n.id}">
-						<div class="note-content">
+						<div class="note-header">
 							<div class="note-title">${esc(n.title)}</div>
-							${n.body ? `<div class="note-body">${esc(n.body)}</div>` : ''}
-							<div class="note-date">${formatDate(n.createdAt)}</div>
+							<button class="note-delete-btn" aria-label="Eliminar nota" onclick="deleteNote('${n.id}')">✕</button>
 						</div>
-						<button class="delete-btn" aria-label="Eliminar nota" onclick="deleteNote('${n.id}')">✕</button>
+						${n.body ? `<div class="note-body">${esc(n.body)}</div>` : ''}
+						<div class="note-date">${formatDate(n.createdAt)}</div>
 					</div>
 				`).join('');
 		}
 
 		async function createNote() {
 			if (!BASE) { setStatus('Primero conecta con la API.', 'err'); return; }
-			const titleValue = title.value.trim();
-			const bodyValue = body.value.trim();
-			if (!titleValue) { setStatus('El título es obligatorio.', 'err'); return; }
+			const title = titleInput.value.trim();
+			const body = bodyInput.value.trim();
+			if (!title) { setStatus('El título es obligatorio.', 'err'); return; }
 			try {
 				const res = await fetch(`${BASE}/notas`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ titleValue, bodyValue })
+					body: JSON.stringify({ title, body })
 				});
 				if (!res.ok) throw new Error();
-				title.value = '';
-				body.value = '';
+				titleInput.value = '';
+				bodyInput.value = '';
 				setStatus('Nota añadida.', 'ok');
 				loadNotes();
 			} catch {
