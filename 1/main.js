@@ -34,7 +34,6 @@ import { styleText as c } from 'node:util';
 console.log(c('yellow', '¡Hola mundo!'));
 global.console.log(c('green', 'Node.js'), 'es un entorno de ejecución para JavaScript fuera del navegador.');
 
-
 // Mostrando información general del sistema operativo
 console.group(c(['magenta', 'underline'], '\nInformación del SO:'));
 Object.entries({
@@ -66,10 +65,10 @@ console.groupEnd();
 console.group(c(['magenta', 'underline'], '\nInformación de la red:'));
 Object.entries(os.networkInterfaces()).forEach(([name, interfaces]) => {
 	console.group(c('cyan', 'Interfaz:'), c('yellow', name));
-	interfaces?.forEach(interface => console.log(
-		c('green', 'Familia:'), interface.family,
-		c('green', 'Tipo:'), interface.internal ? 'Interna' : 'Externa',
-		c('green', 'Dirección IP:'), interface.address
+	interfaces?.forEach(iface => console.log(
+		c('green', 'Familia:'), iface.family,
+		c('green', 'Tipo:'), iface.internal ? 'Interna' : 'Externa',
+		c('green', 'Dirección IP:'), iface.address
 	));
 	console.groupEnd();
 });
