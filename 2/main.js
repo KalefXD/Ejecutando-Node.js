@@ -16,9 +16,9 @@ import { styleText as c } from 'node:util';
 
 /**
  * Apunte #2:
- * `process` es un objeto global exclusivo de Node.js: no existe en los navegadores y no necesita importarse.
+ * `process` es un objeto de ámbito global exclusivo de Node.js: no existe en los navegadores y no necesita importarse.
  * En este script se importa explícitamente desde `node:process` para dejar claro su origen,
- * pero al ser un objeto global de Node.js, los scripts siguientes lo usarán directamente sin necesidad de importarlo.
+ * pero al ser un objeto de ámbito global de Node.js, los scripts siguientes lo usarán directamente sin necesidad de importarlo.
  *
  * Existe un método de `node:util` llamado `parseArgs` que permite manejar los argumentos de forma más estructurada.
  * En este ejemplo no se usa para mantener el script más simple.
@@ -68,7 +68,7 @@ await fs.appendFile(filePath, textArg)
 	.catch(err => console.error(c('red', 'Error al escribir en el archivo:'), err.message));
 
 // Leyendo y mostrando el contenido completo del archivo
-fs.readFile(filePath, 'utf8')
+await fs.readFile(filePath, 'utf8')
 	.then(data => console.log(c('magenta', 'Contenido del archivo:'), '\n' + data))
 	.catch(err => console.error(c('red', 'Error al leer el archivo:'), err.message))
 	.finally(() => console.log(c('green', 'Proceso completado.')));

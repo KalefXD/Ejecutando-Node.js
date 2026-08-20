@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Cliente - API de Notas</title>
+	<title>Probar API de Notas</title>
 	<style>
-		* { box-sizing: border-box; margin: 0; padding: 0; }
+		* { box-sizing: border-box; padding: 0; margin: 0; }
 
 		:root { color-scheme: dark; scrollbar-width: thin; scrollbar-color: #2c2c2a #1a1a18; }
 
@@ -12,13 +12,13 @@
 			max-inline-size: 580px;
 			min-block-size: 100dvb;
 			padding: 2rem 1rem;
+			background: #1a1a18;
 			margin-inline: auto;
 			font-family: system-ui, sans-serif;
 			color: #e8e6e0;
-			background: #1a1a18;
-		}
 
-		header { display: flex; justify-content: space-between; align-items: center; }
+			> header { display: flex; justify-content: space-between; align-items: center; }
+		}
 
 		h1 { font-size: 18px; font-weight: 500; color: #e8e6e0; }
 
@@ -28,11 +28,11 @@
 			padding: 8px 12px;
 			border: 1px solid #444441;
 			border-radius: 8px;
+			background: #2c2c2a;
 			font-family: monospace;
 			font-size: 13px;
 			color: #e8e6e0;
 			outline: none;
-			background: #2c2c2a;
 
 			&:focus { border-color: #888780; }
 		}
@@ -41,12 +41,12 @@
 			padding: 8px 14px;
 			border: 1px solid #444441;
 			border-radius: 8px;
+			background: #2c2c2a;
 			font-family: inherit;
 			font-size: 13px;
 			white-space: nowrap;
 			color: #e8e6e0;
 			cursor: pointer;
-			background: #2c2c2a;
 
 			&:hover { background: #3a3a38; }
 			&:active { scale: 0.98; }
@@ -66,12 +66,12 @@
 			padding: 10px 12px;
 			border: 1px solid #444441;
 			border-radius: 8px;
+			background: #2c2c2a;
 			font-family: inherit;
 			font-size: 14px;
 			color: #e8e6e0;
 			resize: none;
 			outline: none;
-			background: #2c2c2a;
 
 			&::placeholder { color: #888780; }
 			&:focus { border-color: #888780; }
@@ -82,25 +82,26 @@
 			padding: 8px 16px;
 			border: 1px solid #444441;
 			border-radius: 8px;
+			background: #2c2c2a;
 			font-family: inherit;
 			font-size: 14px;
 			color: #e8e6e0;
 			cursor: pointer;
-			background: #2c2c2a;
 
 			&:hover { background: #3a3a38; }
 			&:active { scale: 0.98; }
 		}
 
-		.section-label {
+		section > header {
 			display: flex;
 			justify-content: space-between;
 			align-items: end;
 			margin-block-end: 10px;
-			font-size: 11px;
 			letter-spacing: 1px;
 			color: #5F5E5A;
 			text-transform: uppercase;
+      
+			h2 { font-size: 11px; font-weight: 600; }
 		}
 
 		#apiStatus {
@@ -114,37 +115,37 @@
 		#list { display: grid; gap: 8px; }
 
 		.note {
-			position: relative;
+			display: grid;
+			gap: 4px;
 			padding: 12px 14px;
 			border: 1px solid #444441;
 			border-radius: 8px;
-    		word-break: break-word;
 			background: #2c2c2a;
+			word-break: break-word;
+
+			header {
+				display: flex;
+				gap: 14px;
+				justify-content: space-between;
+			}
+
+			h3 { font-size: 14px; font-weight: 500; color: #e8e6e0; }
+
+			button.delete {
+				align-self: start;
+				border: none;
+				background: none;
+				font-size: 14px;
+				color: #5F5E5A;
+				cursor: pointer;
+
+				&:hover { color: #F09595; }
+			}
+
+			p.body  { font-size: 13px; white-space: pre-wrap; color: #888780; }
+
+			time { display: inline-block; font-size: 11px; color: #5F5E5A; }
 		}
-
-		.note-header { display: flex; gap: 14px; justify-content: space-between; }
-
-		.note-title {
-			margin-block-end: 2px;
-			font-size: 14px;
-			font-weight: 500;
-			color: #e8e6e0;
-		}
-
-		.note-delete-btn {
-			align-self: start;
-			border: none;
-			line-height: 1.25;
-			font-size: 18px;
-			color: #5F5E5A;
-			cursor: pointer;
-			background: none;
-
-			&:hover { color: #F09595; }
-		}
-
-		.note-body { font-size: 13px; white-space: pre-wrap; color: #888780; }
-		.note-date { margin-block-start: 6px; font-size: 11px; color: #5F5E5A; }
 
 		.empty { padding-block: 1rem; font-size: 13px; color: #5F5E5A; }
 	</style>
@@ -165,14 +166,17 @@
 		<button>Añadir nota</button>
 	</form>
 
-	<div class="section-label">
-		Lista
-		<span id="apiStatus"></span>
-	</div>
+	<section>
+		<header>
+			<h2>Lista</h2>
+			<p id="apiStatus" role="status" aria-live="polite"></p>
+		</header>
 
 	<div id="list">
-		<em class="empty">Introduce la URL de la API y pulsa Conectar.</em>
+		<p class="empty"><em>Introduce la URL de la API y pulsa Conectar.</em></p>
 	</div>
+	</section>
+
 
 	<script>
 		let BASE = '';
@@ -222,14 +226,14 @@
 				return;
 			}
 			list.innerHTML = notes.map(n => `
-					<div class="note" id="note-${n.id}">
-						<div class="note-header">
-							<div class="note-title">${esc(n.title)}</div>
-							<button class="note-delete-btn" aria-label="Eliminar nota" onclick="deleteNote('${n.id}')">✕</button>
-						</div>
-						${n.body ? `<div class="note-body">${esc(n.body)}</div>` : ''}
-						<div class="note-date">${formatDate(n.createdAt)}</div>
-					</div>
+					<article class="note" id="note-${n.id}">
+						<header>
+							<h3>${esc(n.title)}</h3>
+							<button class="delete" aria-label="Eliminar nota" onclick="deleteNote('${n.id}')">✕</button>
+						</header>
+						${n.body ? `<p class="body">${esc(n.body)}</p>` : ''}
+						<time datetime="${n.createdAt}">${formatDate(n.createdAt)}</time>
+					</article>
 				`).join('');
 		}
 

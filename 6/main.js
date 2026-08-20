@@ -9,6 +9,12 @@
  * REST (Representational State Transfer) es un estilo arquitectónico que usa métodos HTTP estándar
  * para operaciones CRUD: Create (POST), Read (GET), Update (PUT/PATCH) y Delete (DELETE).
  * Implementarlo sin frameworks permite ver exactamente cómo funciona cada parte del protocolo.
+ * 
+ * Un Model es la capa que se encarga de acceder y manipular los datos de la aplicación,
+ * sin que el resto del código necesite saber cómo se almacenan o de dónde vienen.
+ * Aquí `noteModel` concentra esa lógica para las notas (leer, guardar, actualizar el archivo JSON),
+ * lo que permite cambiar la fuente de datos en el futuro (por ejemplo, a una base de datos)
+ * sin tocar el resto del servidor.
  */
 
 import http from 'node:http';
@@ -41,8 +47,7 @@ const sendJSON = (res, status, data) => {
 	res.end(body);
 };
  
-const sendError = (res, status, message) =>
-	sendJSON(res, status, { error: message });
+const sendError = (res, status, message) => sendJSON(res, status, { error: message });
 
 /**
  * Apunte #3:
@@ -104,9 +109,7 @@ const server = http.createServer(async (req, res) => {
 		const parts = url.pathname.replace(/\/$/, '').split('/').filter(Boolean);
 		const [resource, id] = parts;
  
-		if (resource !== 'notas') {
-			sendError(res, 404, 'Ruta no encontrada');
-		}
+		if (resource !== 'notas') sendError(res, 404, 'Ruta no encontrada');
  
 		// GET /notas - Consigue todas las notas
 		else if (method === 'GET' && !id) {
@@ -157,9 +160,7 @@ const server = http.createServer(async (req, res) => {
 		}
  
 		// Respondiendo con un error 405 (Method Not Allowed) si el método no es compatible con la ruta
-		else {
-			sendError(res, 405, 'Método no permitido');
-		}
+		else sendError(res, 405, 'Método no permitido');
 	}
 
 	const responseTime = Date.now() - requestTime.getTime();
@@ -175,7 +176,7 @@ server.listen(PORT, HOST, () => {
 	console.log(
 		c('magenta', 'API de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/`),
 		'\nPrueba la API usando el archivo "cliente.html" o curl, ejecutando: curl <url>',
-		'\nOpciones de curl con argumento para definir método, encabezados y datos: -X -H -d',
+		'\nOpciones de curl con argumento para poner método, encabezados y datos: -X -H -d',
 		c('gray', `\nDetén la API presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
 });

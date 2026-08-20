@@ -73,8 +73,10 @@ const UserSchema = z.object({
 		['sí', 'si', 'true', '1'].includes(value.toLowerCase())
 	).optional()
 });
+
 // Solicitando datos al usuario y validándolos con el esquema definido
 console.log(c('magenta', 'Por favor, ingresa los datos del usuario:'));
+
 try {
 	const name = await ask('Nombre: ');
 	const age = await ask('Edad: ');

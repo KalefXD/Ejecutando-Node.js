@@ -140,6 +140,7 @@ server.listen(PORT, HOST, () => {
  * `SIGTERM` la envían herramientas del sistema o comandos como `kill`.
  * Escuchar estas señales permite hacer una limpieza ordenada antes de salir:
  * cerrar el servidor, liberar recursos o terminar conexiones abiertas.
+ * 
  * También existe el evento `exit` en `process`, que se dispara cuando el proceso está a punto de cerrarse.
  * Sin embargo, mezclarlo con señales en el mismo handler causa problemas: al pulsar Ctrl+C,
  * `SIGINT` llama a `server.close()`, que termina con `process.exit(0)`, lo que dispara `exit`

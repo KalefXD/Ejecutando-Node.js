@@ -22,10 +22,10 @@ import { styleText as c } from 'node:util';
 
 /**
  * Apunte #2:
- * `global` es el objeto global de Node.js, el equivalente a `window` en los navegadores, pero exclusivo de Node.
- * `global.console.log` solo demuestra que `console` vive ahí; en la práctica, nadie lo llama así.
- * `globalThis` es la alternativa estándar que funciona en cualquier entorno de JavaScript,
- * y en Node.js apunta al mismo objeto que `global`.
+ * `global` es el objeto global y exclusivo de Node.js, el equivalente a `window` en los navegadores web.
+ * El objeto global es un objeto que representa el ámbito global, y los objetos disponibles globalmente se definen en él (ámbito global).
+ * Solo hay un objeto global por entorno, en navegadores es `window`, en Worker es `WorkerGlobalScope`, en Node.js es `global`.
+ * `globalThis` es una propiedad global que permite acceder al objeto global independientemente del entorno actual.
  * 
  * Node.js usa el motor V8 de Chrome para ejecutar JavaScript, lo que le permite correr fuera del navegador.
  */
