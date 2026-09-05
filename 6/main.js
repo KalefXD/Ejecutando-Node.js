@@ -13,8 +13,7 @@
  * Un Model es la capa que se encarga de acceder y manipular los datos de la aplicación,
  * sin que el resto del código necesite saber cómo se almacenan o de dónde vienen.
  * Aquí `noteModel` concentra esa lógica para las notas (leer, guardar, actualizar el archivo JSON),
- * lo que permite cambiar la fuente de datos en el futuro (por ejemplo, a una base de datos)
- * sin tocar el resto del servidor.
+ * lo que permite cambiar la fuente de datos en el futuro (por ejemplo, a una base de datos) sin tocar el resto del servidor.
  */
 
 import http from 'node:http';

@@ -12,19 +12,24 @@ import { styleText as c } from 'node:util';
 
 /**
  * Apunte #2:
- * NPM (Node Package Manager) es un registro público de dependencias para JavaScript (https://www.npmjs.com/).
- * Las dependencias son paquetes de código abierto de terceros que se puede gestionar con `npm` y se listan en el archivo `package.json`.
- * `package.json` es el archivo de configuración fundamental de cualquier proyecto de Node.js.
- * `npm` es una utilidad de CLI que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
- * así como ejecutar scripts definidos en `package.json`. Existen algunas alternativas a `npm` como `yarn` o `pnpm`.
+ * NPM (Node Package Manager) es el gestor de paquetes de Node.js (`npm`), y también
+ * el nombre del registro público donde se publican paquetes (https://www.npmjs.com/).
+ * Un paquete es un conjunto de código que puede reutilizarse en un proyecto.
+ * Una dependencia es un paquete externo que el proyecto puede necesitar para funcionar.
+ * Sus dependencias directas se declaran en el archivo `package.json` y pueden gestionarse mediante `npm`.
+ * `npm` es una herramienta de línea de comandos que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
+ * así como ejecutar líneas de comandos definidas en el `package.json`. Existen alternativas a `npm` como `pnpm` o `yarn`.
+ * `package.json` es el archivo de configuración y metadatos principal de un proyecto Node.js.
+ * Contiene información del proyecto, sus dependencias y los scripts que se pueden ejecutar con `npm`.
  * 
- * Ejecutar `npm install` instalará las dependencias listadas en `package.json` y sus versiones especificadas,
- * en la carpeta `node_modules`, creándola si aún no existe. También creará un archivo `package-lock.json`
- * para bloquear las versiones exactas de las dependencias instaladas.
+ * `npm install` instala las dependencias declaradas en el `package.json` y sus dependencias
+ * transitivas dentro de la carpeta `node_modules`, creándola si no existe.
+ * También genera o actualiza `package-lock.json`, que registra las versiones exactas y las resoluciones
+ * de las dependencias instaladas, permitiendo reproducir instalaciones de forma más consistente.
  *
- * La dependencia Zod sirve para validar y tipar datos de forma segura en JavaScript y TypeScript.
+ * La dependencia Zod permite validar y tipar datos en tiempo de ejecución de forma segura en JavaScript y TypeScript.
  *
- * La verificación de instalación con `await import()` es un recurso didáctico, no una práctica común.
+ * La verificación de instalación con `await import()` de aquí es un recurso didáctico, no una práctica común.
  * En proyectos reales, se asume que las dependencias del `package.json` ya fueron instaladas con `npm install`.
  * A partir de ahora, deberás instalarlas por tu cuenta antes de ejecutar los scripts siguientes.
  */
@@ -38,7 +43,7 @@ const z = await import('zod')
 	.catch(() => {
 		console.error(
 			c('red', 'Error: La dependencia "zod" no está instalada.'),
-			'\nInfo: Este script requiere la dependencia "zod" para validar datos',
+			'\nInfo: Este script necesita la dependencia "zod" para validar datos',
 			c('red', '\nEjecuta: npm install zod')
 		);
 		process.exit(1);
@@ -74,6 +79,9 @@ const UserSchema = z.object({
 	).optional()
 });
 
+// Compilando el esquema para optimizar la validación
+const compiledUserSchema = z.compile(UserSchema);
+
 // Solicitando datos al usuario y validándolos con el esquema definido
 console.log(c('magenta', 'Por favor, ingresa los datos del usuario:'));
 
@@ -84,7 +92,7 @@ try {
 	const isActive = await ask('¿Está activo? (sí/no): ');
 
 	// Validando los datos del usuario usando el esquema definido
-	const user = UserSchema.parse({ name, age, email, isActive });
+	const user = compiledUserSchema.parse({ name, age, email, isActive });
 	console.log(c('green', '\nDatos válidos:'), user);
 
 } catch (err) {

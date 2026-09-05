@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { notasController } from '../controllers/notas.js';
+import { notesController } from '../controllers/notas.js';
 
-export const notasRouter = Router();
+export const notesRouter = Router();
 
-notasRouter.get('/', notasController.getAll);
-notasRouter.get('/:id', notasController.get);
-notasRouter.post('/', notasController.create);
-notasRouter.delete('/:id', notasController.delete);
-notasRouter.patch('/:id', notasController.update);
+notesRouter.get('/', notesController.getAll);
+notesRouter.get('/:id', notesController.get);
+notesRouter.post('/', notesController.create);
+notesRouter.delete('/:id', notesController.delete);
+notesRouter.patch('/:id', notesController.update);

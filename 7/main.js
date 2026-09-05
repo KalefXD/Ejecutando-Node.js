@@ -11,7 +11,6 @@ import cors from 'cors';
 import { styleText as c } from 'node:util';
 import { notasRouter } from './routes/notas.js'
 
-
 const PORT = process.env.PORT ?? 3000, HOST = process.env.HOST ?? 'localhost';
 
 const app = express();

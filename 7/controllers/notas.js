@@ -1,6 +1,7 @@
 import { noteModel } from '../models/nota.js';
+import { createNoteSchema, updateNoteSchema } from '../notas.schema.js';
 
-export class notasController {
+export class notesController {
 	// Obtener todas las notas
 	static async getAll(req, res) {
 		const notes = await noteModel.getAll();
@@ -9,10 +10,10 @@ export class notasController {
 
 		// Aplicando filtro por etiquetas si se especifica una
 		if (tags) {
-			const notasFiltradas = notes.filter(note =>
+			const notesFiltered = notes.filter(note =>
 				note.tags && note.tags.some(tag => tag.toLowerCase() === tags.toLowerCase())
 			);
-			return res.json(notasFiltradas);
+			return res.json(notesFiltered);
 		}
 
 		// Devolviendo todas las notas si no hay filtros
@@ -29,8 +30,6 @@ export class notasController {
 
 	// Crear nueva nota
 	static async create(req, res) {
-		const notes = await noteModel.getAll();
-
 		// Validando los datos recibidos usando el esquema Zod
 		const result = createNoteSchema.safeParse(req.body);
 
