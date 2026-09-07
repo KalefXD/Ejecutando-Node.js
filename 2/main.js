@@ -16,7 +16,7 @@ import { styleText as c } from 'node:util';
 
 /**
  * Apunte #2:
- * `process` es un objeto de ámbito global exclusivo de Node.js: no existe en los navegadores y no necesita importarse.
+ * `process` es un objeto de ámbito global exclusivo de Node.js: no necesita importarse y no existe en los navegadores.
  * En este script se importa explícitamente desde `node:process` para dejar claro su origen,
  * pero al ser un objeto de ámbito global de Node.js, los scripts siguientes lo usarán directamente sin necesidad de importarlo.
  *
@@ -41,7 +41,6 @@ if (!fileArg || !textArg) {
  * Apunte #3:
  * `path.resolve()` convierte una ruta relativa en absoluta usando `process.cwd()` como base,
  * que es el directorio desde donde se ejecutó el comando, no necesariamente donde está el script.
- * Esto evita comportamientos inesperados cuando el script se llama desde otro directorio.
  */
 
 // Convirtiendo la ruta del archivo a una ruta absoluta

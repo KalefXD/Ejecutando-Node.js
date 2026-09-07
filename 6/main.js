@@ -7,7 +7,7 @@
  * espera a que llegue completo y lo parsea como JSON, equivalente a hacer `JSON.parse(await text())`.
  * 
  * REST (Representational State Transfer) es un estilo arquitectónico que usa métodos HTTP estándar
- * para operaciones CRUD: Create (POST), Read (GET), Update (PUT/PATCH) y Delete (DELETE).
+ * para operaciones CRUD: Create (POST), Read (GET), Update (PATCH) y Delete (DELETE).
  * Implementarlo sin frameworks permite ver exactamente cómo funciona cada parte del protocolo.
  * 
  * Un Model es la capa que se encarga de acceder y manipular los datos de la aplicación,
@@ -57,7 +57,7 @@ const sendError = (res, status, message) => sendJSON(res, status, { error: messa
  */
 
 // Limitando el cuerpo a 1MB para prevenir ataques
-const maxSize = 1024 * 1024;
+const maxSize = 1024 ** 2;
  
 // Lee y valida el body JSON (respeta el límite de tamaño)
 const readBody = async (req) => {
@@ -98,7 +98,7 @@ const server = http.createServer(async (req, res) => {
 	// Respondiendo rápidamente headers CORS a las solicitudes OPTIONS sin contenido (204 No Content)
 	if (method === 'OPTIONS') {
 		res.writeHead(204, {
-			"Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE",
+			"Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE",
 			"Access-Control-Allow-Headers": "Content-Type, Authorization"
 		});
 		res.end();
@@ -107,22 +107,22 @@ const server = http.createServer(async (req, res) => {
 	else {
 		const parts = url.pathname.replace(/\/$/, '').split('/').filter(Boolean);
 		const [resource, id] = parts;
- 
-		if (resource !== 'notas') sendError(res, 404, 'Ruta no encontrada');
- 
-		// GET /notas - Consigue todas las notas
+
+		if (resource !== 'notes') sendError(res, 404, 'Ruta no encontrada');
+
+		// GET /notes - Consigue todas las notas
 		else if (method === 'GET' && !id) {
 			const notes = await noteModel.getAll();
 			sendJSON(res, 200, notes);
 		}
- 
-		// GET /notas/:id - Consigue una nota
+
+		// GET /notes/:id - Consigue una nota
 		else if (method === 'GET' && id) {
 			const note = await noteModel.get(id);
 			note ? sendJSON(res, 200, note) : sendError(res, 404, 'Nota no encontrada');
 		}
- 
-		// POST /notas - Crea una nota
+
+		// POST /notes - Crea una nota
 		else if (method === 'POST' && !id) {
 			try {
 				const data = await readBody(req);
@@ -136,28 +136,19 @@ const server = http.createServer(async (req, res) => {
 			}
 		}
 
-		// PUT /notas/:id - Reemplaza una nota completa
-		else if (method === 'PUT' && id) {
-			const data = await readBody(req);
-			if (!data?.title) return sendError(res, 400, 'El campo "title" es obligatorio');
-			// Reemplaza todo, solo conserva el id y createdAt
-			const note = await noteModel.replace(id, data);
-			note ? sendJSON(res, 200, note) : sendError(res, 404, 'Nota no encontrada');
-		}
-
-		// PATCH /notas/:id - Actualiza campos parcialmente
+		// PATCH /notes/:id - Actualiza campos parcialmente
 		else if (method === 'PATCH' && id) {
 			const data = await readBody(req);
 			const note = await noteModel.update(id, data);
 			note ? sendJSON(res, 200, note) : sendError(res, 404, 'Nota no encontrada');
 		}
- 
-		// DELETE /notas/:id - Elimina una nota
+
+		// DELETE /notes/:id - Elimina una nota
 		else if (method === 'DELETE' && id) {
 			const note = await noteModel.delete(id);
 			note ? sendJSON(res, 200, note) : sendError(res, 404, 'Nota no encontrada');
 		}
- 
+
 		// Respondiendo con un error 405 (Method Not Allowed) si el método no es compatible con la ruta
 		else sendError(res, 405, 'Método no permitido');
 	}

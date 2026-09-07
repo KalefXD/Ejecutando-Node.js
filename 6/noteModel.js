@@ -43,21 +43,13 @@ export class noteModel {
 		return note;
 	}
 
-	static async replace(id, data) {
-		const notes = await loadNotes();
-		const index = notes.findIndex(n => n.id === id);
-		if (index === -1) return null;
-		// Conservando id y createdAt y reemplazando todo lo demás
-		notes[index] = { id, createdAt: notes[index].createdAt, ...data };
-		await saveNotes(notes);
-		return notes[index];
-	}
-
 	static async update(id, data) {
 		const notes = await loadNotes();
 		const index = notes.findIndex(n => n.id === id);
 		if (index === -1) return null;
-		notes[index] = { ...notes[index], ...data, id };
+		// Evitando que se cambie el id y la fecha de creación de la nota
+		delete data.id; delete data.createdAt;
+		notes[index] = { ...data };
 		await saveNotes(notes);
 		return notes[index];
 	}

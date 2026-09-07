@@ -53,7 +53,7 @@ async function showDirFiles(files) {
 	// Leyendo en paralelo los metadatos de cada archivo
 	const entries = await Promise.all(
 		// Creando un array de promesas para cada archivo sin bloquear la ejecución
-		files.map(async (file, i) => {
+		files.map(async file => {
 			// Uniendo la ruta del directorio con el nombre del archivo
 			const fullPath = path.join(folder, file);
 

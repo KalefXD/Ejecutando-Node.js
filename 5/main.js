@@ -50,24 +50,23 @@ function getMimeType(filePath) {
 	const mimeType = mimeTypes[ext] ?? 'application/octet-stream';
 	// Tipos de archivos que deben incluir UTF8
 	const textTypes = ['.txt', '.html', '.css', '.js', '.json', '.svg', '.xml'];
-	return textTypes.includes(ext) ? mimeType + '; charset=utf-8' : mimeType;
+	return mimeType + (textTypes.includes(ext) ? '; charset=utf-8' : '');
 }
 
 // Llevando el conteo de peticiones
 let requestCount = 0;
 
-/**
+/*
  * Apunte #4:
  * `http.createServer()` crea un servidor HTTP y recibe un callback que se ejecuta con cada petición.
  * El callback recibe dos objetos: `req` (request), con información sobre la petición del cliente
  * (método, URL, cabeceras, etc.), y `res` (response), para construir y enviar la respuesta.
  *
  * Los códigos de estado de respuesta HTTP indican el estado de una petición HTTP.
- * Los códigos se agrupan en categorías: Respuestas informativas (1xx), Respuestas exitosas (2xx),
+ * Aunque pueden usarse códigos personalizados, muchos de estos códigos tienen un significado estándar.
+ * Y se agrupan en 5 categorías: Respuestas informativas (1xx), Respuestas exitosas (2xx),
  * Redirecciones (3xx), Errores del cliente (4xx) y Errores del servidor (5xx).
- * Estos códigos estan definidos por el IETF en los RFC de HTTP, alistadas oficialmente por el IANA.
- * Aunque pueden usarse códigos personalizados, es recomendable seguir los estándares
- * para asegurar la compatibilidad con clientes y herramientas.
+ * Lista de códigos de estado HTTP: https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Status.
  */
 
 // Creando el servidor HTTP

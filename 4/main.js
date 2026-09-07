@@ -10,7 +10,7 @@
 import readline from 'node:readline';
 import { styleText as c } from 'node:util';
 
-/**
+/*
  * Apunte #2:
  * NPM (Node Package Manager) es el gestor de paquetes de Node.js (`npm`), y también
  * el nombre del registro público donde se publican paquetes (https://www.npmjs.com/).
@@ -26,9 +26,9 @@ import { styleText as c } from 'node:util';
  * transitivas dentro de la carpeta `node_modules`, creándola si no existe.
  * También genera o actualiza `package-lock.json`, que registra las versiones exactas y las resoluciones
  * de las dependencias instaladas, permitiendo reproducir instalaciones de forma más consistente.
- *
+ * 
  * La dependencia Zod permite validar y tipar datos en tiempo de ejecución de forma segura en JavaScript y TypeScript.
- *
+ * 
  * La verificación de instalación con `await import()` de aquí es un recurso didáctico, no una práctica común.
  * En proyectos reales, se asume que las dependencias del `package.json` ya fueron instaladas con `npm install`.
  * A partir de ahora, deberás instalarlas por tu cuenta antes de ejecutar los scripts siguientes.
@@ -55,7 +55,11 @@ const rl = readline.createInterface({
 	output: process.stdout
 });
 
-// Función para encapsular la pregunta al usuario en una promesa
+/**
+ * Pregunta al usuario y devuelve una promesa con la respuesta.
+ * @param {string} question 
+ * @returns {Promise<string>}
+ */
 function ask(question) {
 	return new Promise(resolve => rl.question(c('cyan', question), resolve));
 }
@@ -97,7 +101,7 @@ try {
 
 } catch (err) {
 	if (err instanceof z.ZodError) {
-		// Capturando y mostrando errores de validación de Zod de forma estructurada
+		// Capturando y mostrando errores de validación de Zod
 		const userErrors = z.treeifyError(err).properties;
 		console.error(c('red', '\nError de validación:'), userErrors);
 	} else {
