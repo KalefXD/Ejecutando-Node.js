@@ -131,16 +131,20 @@ const server = http.createServer(async (req, res) => {
 				// Respondiendo con un código 201 (Created) si la nota se creó correctamente
 				sendJSON(res, 201, note);
 			} catch (err) {
-				// Respondiendo con un error 400 (Bad Request) si el JSON es inválido
 				sendError(res, 400, err.message);
 			}
 		}
 
-		// PATCH /notes/:id - Actualiza campos parcialmente
+		// PATCH /notes/:id - Actualiza una nota
 		else if (method === 'PATCH' && id) {
-			const data = await readBody(req);
-			const note = await noteModel.update(id, data);
-			note ? sendJSON(res, 200, note) : sendError(res, 404, 'Nota no encontrada');
+			try {
+				const data = await readBody(req);
+				if (!data?.title) return sendError(res, 400, 'El campo "title" es obligatorio');
+				const note = await noteModel.update(id, data);
+				note ? sendJSON(res, 200, note) : sendError(res, 404, 'Nota no encontrada');
+			} catch (err) {
+				sendError(res, 400, err.message);
+			}
 		}
 
 		// DELETE /notes/:id - Elimina una nota

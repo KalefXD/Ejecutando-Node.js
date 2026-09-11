@@ -33,11 +33,19 @@ export class noteModel {
 
 	static async add(data) {
 		const notes = await loadNotes();
+
 		const note = {
 			id: crypto.randomUUID(),
 			createdAt: new Date().toISOString(),
+			modifiedAt: new Date().toISOString(),
 			...data
 		};
+
+		// Validando que el campo "title" sea obligatorio y no esté vacío
+		if (!data?.title || typeof data.title !== 'string' || !data.title.trim()) {
+			throw new Error('El campo "title" es obligatorio');
+		}
+
 		notes.push(note);
 		await saveNotes(notes);
 		return note;
@@ -45,10 +53,18 @@ export class noteModel {
 
 	static async update(id, data) {
 		const notes = await loadNotes();
+
 		const index = notes.findIndex(n => n.id === id);
 		if (index === -1) return null;
+
+		if (!data?.title || typeof data.title !== 'string' || !data.title.trim()) {
+			throw new Error('El campo "title" es obligatorio');
+		}
+
 		// Evitando que se cambie el id y la fecha de creación de la nota
 		delete data.id; delete data.createdAt;
+		data.modifiedAt = new Date().toISOString();
+
 		notes[index] = { ...data };
 		await saveNotes(notes);
 		return notes[index];
@@ -56,8 +72,10 @@ export class noteModel {
 
 	static async delete(id) {
 		const notes = await loadNotes();
+
 		const index = notes.findIndex(n => n.id === id);
 		if (index === -1) return null;
+
 		const [deleted] = notes.splice(index, 1);
 		await saveNotes(notes);
 		return deleted;
