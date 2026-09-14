@@ -44,19 +44,24 @@
 			outline-color: #888780;
 
 			&::placeholder { color: #888780; }
-    }
+		}
 
 		button {
 			cursor: pointer;
-			
+
 			&:is(:hover, :focus-visible) { background: #3a3a38; }
 			&:not(:disabled):active { scale: 0.98; }
 			&:disabled { filter: brightness(62.5%); cursor: auto; }
 		}
 
-		section { flex-direction: column; }
+		section {
+			flex-direction: column;
+
+			> header { justify-content: space-between; align-items: end; }
+		}
+
 		section h2 {
-			color: #5F5E5A; 
+			color: #5f5e5a; 
 			font-size: .675em;
 			font-weight: 600;
 			text-transform: uppercase;
@@ -71,22 +76,20 @@
 			/* El atributo `rows` del textarea no funciona con `field-sizing: content` */
 			textarea {
 				box-sizing: content-box;
-				min-block-size: 2lh;
+				min-block-size: calc(attr(rows) * 1lh);
 				field-sizing: content;
 				resize: none;
 			}
 		}
 
-		section.note-list > header { justify-content: space-between; align-items: end; }
-
 		#apiStatus {
 			font-size: .6em;
 
-			&.ok { color: #5DCAA5; }
-			&.err { color: #F09595; }
+			&.ok { color: #5dcaa5; }
+			&.err { color: #f09595; }
 		}
 
-		.muted { font-size: .75rem; color: #5F5E5A; }
+		p.muted { font-size: .75rem; color: #5f5e5a; }
 
 		#noteList { flex-direction: column; }
 
@@ -108,14 +111,14 @@
 				border: none;
 				background: none;
 				font-size: 14px;
-				color: #5F5E5A;
+				color: #5f5e5a;
 				line-height: 0;
 
-				&:hover { color: #F09595; }
+				&:hover { color: #f09595; }
 			}
 
 			p.body { font-size: 13px; white-space: pre-wrap; color: #888780; }
-			time { display: inline-block; font-size: 11px; color: #5F5E5A; }
+			time { display: inline-block; font-size: 11px; color: #5f5e5a; }
 		}
 	</style>
 </head>
@@ -140,7 +143,7 @@
 		</form>
 	</section>
 
-	<section class="note-list flex">
+	<section class="flex">
 		<header class="flex">
 			<h2>Lista</h2>
 			<p id="apiStatus" role="status" aria-live="polite"></p>
