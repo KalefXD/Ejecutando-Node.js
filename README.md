@@ -1,6 +1,6 @@
 # Ejecutando Node.js
 
-Colección de scripts para aprender de Node.js. Cada carpeta contiene un ejemplo independiente con un `main.js`, con archivos asociados y apuntes breves.
+Colección de scripts con apuntes para aprender Node.js. Cada carpeta contiene un ejemplo independiente con un `main.js`, con archivos asociados y apuntes breves.
 
 **Scripts**
 1. Mostrando información del SO

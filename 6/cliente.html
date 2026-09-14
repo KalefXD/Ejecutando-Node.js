@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
@@ -8,175 +8,148 @@
 
 		:root { color-scheme: dark; scrollbar-width: thin; scrollbar-color: #2c2c2a #1a1a18; }
 
+		.flex { display: flex; gap: .5rem; }
+
 		body {
-			max-inline-size: 580px;
-			min-block-size: 100dvb;
-			padding: 2rem 1rem;
-			background: #1a1a18;
-			margin-inline: auto;
-			font-family: system-ui, sans-serif;
-			color: #e8e6e0;
-
-			> header { display: flex; justify-content: space-between; align-items: center; }
-		}
-
-		h1 { font-size: 18px; font-weight: 500; color: #e8e6e0; }
-
-		.url-bar { display: flex; gap: 8px; }
-
-		.url-bar input {
-			padding: 8px 12px;
-			border: 1px solid #444441;
-			border-radius: 8px;
-			background: #2c2c2a;
-			font-family: monospace;
-			font-size: 13px;
-			color: #e8e6e0;
-			outline: none;
-
-			&:focus { border-color: #888780; }
-		}
-
-		.url-bar button {
-			padding: 8px 14px;
-			border: 1px solid #444441;
-			border-radius: 8px;
-			background: #2c2c2a;
-			font-family: inherit;
-			font-size: 13px;
-			white-space: nowrap;
-			color: #e8e6e0;
-			cursor: pointer;
-
-			&:hover { background: #3a3a38; }
-			&:active { scale: 0.98; }
-		}
-
-		form { 
 			display: flex;
+			gap: 1rem;
 			flex-direction: column;
-			gap: 8px;
-			margin-block: 1.5rem;
-
-			/* El atributo `rows` del textarea no funciona con `field-sizing: content` */
-			textarea { box-sizing: content-box; min-block-size: 2lh; field-sizing: content; }
+			min-height: 100dvh;
+			max-width: 65ch;
+			padding: 2rem 1rem;
+			margin-inline: auto;
+			background: #1a1a18;
+			font-family: Arial, system-ui, sans-serif;
+			color: #e8e6e0;
 		}
 
-		form :is(input, textarea) {
-			padding: 10px 12px;
+		header.top {
+			justify-content: space-between;
+			align-items: center;
+			font-size: .8rem;
+			flex-wrap: wrap;
+
+			h1 { font-size: 1.2rem; font-weight: 500; }
+			input { font-family: monospace; field-sizing: content; }
+		}
+
+		input, textarea, button {
+			padding: .5em 1em;
 			border: 1px solid #444441;
-			border-radius: 8px;
+			border-radius: .5em;
 			background: #2c2c2a;
 			font-family: inherit;
-			font-size: 14px;
-			color: #e8e6e0;
-			resize: none;
-			outline: none;
+			font-size: inherit;
+			color: inherit;
+			outline-color: #888780;
 
 			&::placeholder { color: #888780; }
-			&:focus { border-color: #888780; }
-		}
+    }
 
-		form button {
-			align-self: end;
-			padding: 8px 16px;
-			border: 1px solid #444441;
-			border-radius: 8px;
-			background: #2c2c2a;
-			font-family: inherit;
-			font-size: 14px;
-			color: #e8e6e0;
+		button {
 			cursor: pointer;
-
-			&:hover { background: #3a3a38; }
-			&:active { scale: 0.98; }
+			
+			&:is(:hover, :focus-visible) { background: #3a3a38; }
+			&:not(:disabled):active { scale: 0.98; }
+			&:disabled { filter: brightness(62.5%); cursor: auto; }
 		}
 
-		section > header {
-			display: flex;
-			justify-content: space-between;
-			align-items: end;
-			margin-block-end: 10px;
-			letter-spacing: 1px;
-			color: #5F5E5A;
+		section { flex-direction: column; }
+		section h2 {
+			color: #5F5E5A; 
+			font-size: .675em;
+			font-weight: 600;
 			text-transform: uppercase;
-      
-			h2 { font-size: 11px; font-weight: 600; }
 		}
+
+		form {
+			flex-direction: column;
+			font-size: .9rem;
+
+			input { flex: 1; }
+
+			/* El atributo `rows` del textarea no funciona con `field-sizing: content` */
+			textarea {
+				box-sizing: content-box;
+				min-block-size: 2lh;
+				field-sizing: content;
+				resize: none;
+			}
+		}
+
+		section.note-list > header { justify-content: space-between; align-items: end; }
 
 		#apiStatus {
-			font-size: 8px;
-			color: #888780;
+			font-size: .6em;
 
 			&.ok { color: #5DCAA5; }
 			&.err { color: #F09595; }
 		}
 
-		#list { display: grid; gap: 8px; }
+		.muted { font-size: .75rem; color: #5F5E5A; }
+
+		#noteList { flex-direction: column; }
 
 		.note {
 			display: grid;
-			gap: 4px;
-			padding: 12px 14px;
+			gap: .375rem;
+			padding: .75rem 1rem;
 			border: 1px solid #444441;
-			border-radius: 8px;
+			border-radius: .5rem;
 			background: #2c2c2a;
 			word-break: break-word;
 
-			header {
-				display: flex;
-				gap: 14px;
-				justify-content: space-between;
-			}
-
+			header { justify-content: space-between; }
 			h3 { font-size: 14px; font-weight: 500; color: #e8e6e0; }
 
 			button.delete {
-				align-self: start;
+				height: 100%;
+				padding: 0;
 				border: none;
 				background: none;
 				font-size: 14px;
 				color: #5F5E5A;
-				cursor: pointer;
+				line-height: 0;
 
 				&:hover { color: #F09595; }
 			}
 
-			p.body  { font-size: 13px; white-space: pre-wrap; color: #888780; }
-
+			p.body { font-size: 13px; white-space: pre-wrap; color: #888780; }
 			time { display: inline-block; font-size: 11px; color: #5F5E5A; }
 		}
-
-		.empty { padding-block: 1rem; font-size: 13px; color: #5F5E5A; }
 	</style>
 </head>
-<body> 
-	<header>
+<body>
+	<header class="top flex">
 		<h1>Notas</h1>
 
-		<div class="url-bar">
-			<input id="baseUrl" type="url" value="http://localhost:3000" spellcheck="false" />
+		<div class="flex">
+			<input id="apiUrl" type="url" value="http://localhost:3000" spellcheck="false" />
 			<button onclick="connect()">Conectar</button>
 		</div>
 	</header>
 
-	<form onsubmit="handleFormSubmit(event)" autocomplete="off">
-		<input id="titleInput" placeholder="Título" required />
-		<textarea id="bodyInput" rows="2" placeholder="Contenido"></textarea>
-		<button>Añadir nota</button>
-	</form>
+	<section class="flex">
+		<h2>Crear nota</h2>
+		<form name="noteForm" class="flex" onsubmit="handleFormSubmit(event)" autocomplete="off">
+			<div class="flex">
+				<input name="title" placeholder="Título" required>
+	 			<button name="submit" disabled>Añadir nota</button>
+			</div>
+			<textarea name="body" rows="2" placeholder="Contenido"></textarea>
+		</form>
+	</section>
 
-	<section>
-		<header>
+	<section class="note-list flex">
+		<header class="flex">
 			<h2>Lista</h2>
 			<p id="apiStatus" role="status" aria-live="polite"></p>
 		</header>
 
-	<div id="list">
-		<p class="empty"><em>Introduce la URL de la API y pulsa Conectar.</em></p>
-	</div>
+		<div id="noteList" class="flex">
+			<p class="muted"><em>Introduce la URL de la API y pulsa Conectar.</em></p>
+		</div>
 	</section>
-
 
 	<script>
 		let BASE = '';
@@ -186,7 +159,7 @@
 			createNote();
 		}
 
-		function setStatus(msg, type = '') {
+		function setStatus(msg, type) {
 			apiStatus.textContent = msg;
 			apiStatus.className = 'status ' + type;
 			if (type === 'ok') setTimeout(() => { apiStatus.textContent = ''; apiStatus.className = 'status'; }, 3000);
@@ -201,72 +174,74 @@
 		}
 
 		function connect() {
-			const raw = baseUrl.value.trim().replace(/\/$/, '');
+			const raw = apiUrl.value.trim().replace(/\/$/, '');
 			if (!raw) { setStatus('Introduce una URL válida.', 'err'); return; }
-			BASE = raw;
-			setStatus('');
+			BASE = raw + '/notes';
 			loadNotes();
 		}
 
 		async function loadNotes() {
 			if (!BASE) return;
 			try {
-				const res = await fetch(`${BASE}/notas`);
+				const res = await fetch(BASE);
 				if (!res.ok) throw new Error();
 				render(await res.json());
+				noteForm.submit.disabled = false;
 			} catch {
 				setStatus('No se pudo conectar con la API.', 'err');
-				list.innerHTML = '<em class="empty">Sin conexión.</em>';
+				noteList.setHTMLUnsafe('<p class="muted"><em>Sin conexión.</em></p>');
 			}
 		}
 
 		function render(notes) {
 			if (!notes.length) {
-				list.innerHTML = '<em class="empty">No hay notas aún.</em>';
+				noteList.setHTMLUnsafe('<p class="muted"><em>No hay notas aún.</em></p>');
 				return;
 			}
-			list.innerHTML = notes.map(n => `
+			noteList.setHTMLUnsafe(notes.map(n => `
 					<article class="note" id="note-${n.id}">
-						<header>
+						<header class="flex">
 							<h3>${esc(n.title)}</h3>
 							<button class="delete" aria-label="Eliminar nota" onclick="deleteNote('${n.id}')">✕</button>
 						</header>
 						${n.body ? `<p class="body">${esc(n.body)}</p>` : ''}
 						<time datetime="${n.createdAt}">${formatDate(n.createdAt)}</time>
 					</article>
-				`).join('');
+				`).join(''));
 		}
 
 		async function createNote() {
-			if (!BASE) { setStatus('Primero conecta con la API.', 'err'); return; }
-			const title = titleInput.value.trim();
-			const body = bodyInput.value.trim();
+			const title = noteForm.title.value.trim();
+			const body = noteForm.body.value.trim();
+
 			if (!title) { setStatus('El título es obligatorio.', 'err'); return; }
+
 			try {
-				const res = await fetch(`${BASE}/notas`, {
+				noteForm.submit.disabled = true;
+
+				const res = await fetch(BASE, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ title, body })
 				});
 				if (!res.ok) throw new Error();
-				titleInput.value = '';
-				bodyInput.value = '';
+
+				noteForm.title.value = '';
+				noteForm.body.value = '';
+
 				setStatus('Nota añadida.', 'ok');
 				loadNotes();
-			} catch {
-				setStatus('Error al crear la nota.', 'err');
-			}
+			} catch { setStatus('Error al crear la nota.', 'err'); }
 		}
 
 		async function deleteNote(id) {
 			try {
-				const res = await fetch(`${BASE}/notas/${id}`, { method: 'DELETE' });
+				const res = await fetch(BASE + '/' + id, { method: 'DELETE' });
 				if (!res.ok) throw new Error();
+
 				setStatus('Nota eliminada.', 'ok');
 				loadNotes();
-			} catch {
-				setStatus('Error al eliminar la nota.', 'err');
-			}
+			} catch { setStatus('Error al eliminar la nota.', 'err'); }
 		}
 	</script>
 </body>
