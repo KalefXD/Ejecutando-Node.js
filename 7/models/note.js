@@ -1,6 +1,6 @@
 const notes = [];
 
-export class noteModel {
+export default class noteModel {
 	static async getAll() {
 		return notes.map(note => ({ ...note }));
 	}

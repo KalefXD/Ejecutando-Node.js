@@ -76,7 +76,7 @@
 			/* El atributo `rows` del textarea no funciona con `field-sizing: content` */
 			textarea {
 				box-sizing: content-box;
-				min-block-size: calc(attr(rows) * 1lh);
+				min-height: calc(attr(rows type(<number>)) * 1lh);
 				field-sizing: content;
 				resize: none;
 			}
@@ -104,21 +104,20 @@
 
 			header { justify-content: space-between; }
 			h3 { font-size: 14px; font-weight: 500; color: #e8e6e0; }
-
-			button.delete {
-				height: 100%;
-				padding: 0;
-				border: none;
-				background: none;
-				font-size: 14px;
-				color: #5f5e5a;
-				line-height: 0;
-
-				&:hover { color: #f09595; }
-			}
-
 			p.body { font-size: 13px; white-space: pre-wrap; color: #888780; }
 			time { display: inline-block; font-size: 11px; color: #5f5e5a; }
+		}
+
+		.note button.delete {
+			height: 100%;
+			padding: 0;
+			border: none;
+			background: none;
+			font-size: 14px;
+			color: #5f5e5a;
+			line-height: 0;
+
+			&:hover { color: #f09595; }
 		}
 	</style>
 </head>

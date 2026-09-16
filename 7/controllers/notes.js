@@ -1,7 +1,7 @@
-import { noteModel } from '../models/nota.js';
+import noteModel from '../models/note.js';
 import { createNoteSchema, updateNoteSchema } from '../notas.schema.js';
 
-export class notesController {
+export default class notesController {
 	// Obtener todas las notas
 	static async getAll(req, res) {
 		const notes = await noteModel.getAll();
@@ -37,7 +37,7 @@ export class notesController {
 			// Si la validación falla, devolver error 400 con detalles específicos
 			return res.status(400).json({ 
 				error: 'Datos de entrada inválidos',
-				detalles: z.treeifyError(result.error)
+				details: z.treeifyError(result.error)
 			});
 		}
 
@@ -46,7 +46,7 @@ export class notesController {
 			id: crypto.randomUUID(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			...result.data // Spread de los datos validados
+			...result.data
 		};
 
 		// Agregando a la "base de datos" en memoria
@@ -71,7 +71,7 @@ export class notesController {
 		if (!result.success) {
 			return res.status(400).json({
 				error: 'Datos de entrada inválidos',
-				detalles: z.treeifyError(result.error)
+				details: z.treeifyError(result.error)
 			});
 		}
 

@@ -3,13 +3,12 @@
  * 
  * Apunte #1:
  * La dependencia Express permite crear y gestionar servidores web de forma sencilla y eficiente.
- * La dependencia Cors permite habilitar y controlar CORS de manera sencilla.
  */
 
 import express from 'express';
 import cors from 'cors';
 import { styleText as c } from 'node:util';
-import { notasRouter } from './routes/notas.js'
+import notesRouter from './routes/notes.js';
 
 const PORT = process.env.PORT ?? 3000, HOST = process.env.HOST ?? 'localhost';
 
@@ -30,7 +29,9 @@ app.use(cors());
 
 app.disable('x-powered-by');
 
-app.use('/api', notasRouter);
+app.use('/api', notesRouter);
+
+
 
 app.listen(PORT, HOST, () => {
 	const { port } = app.address();

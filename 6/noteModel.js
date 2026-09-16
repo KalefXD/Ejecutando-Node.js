@@ -21,7 +21,7 @@ async function saveNotes(notes) {
 }
 
 // Exportando la clase noteModel con métodos estáticos para gestionar las notas
-export class noteModel {
+export default class noteModel {
 	static async getAll() {
 		return loadNotes();
 	}

@@ -21,7 +21,7 @@ import { json } from 'node:stream/consumers';
 import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import { styleText as c } from 'node:util';
-import { noteModel } from './noteModel.js';
+import noteModel from './noteModel.js';
 
 /**
  * Apunte #2:
