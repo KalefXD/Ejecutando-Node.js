@@ -9,25 +9,31 @@
 import http from 'node:http';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { styleText as c } from 'node:util';
+import { parseArgs, styleText as c } from 'node:util';
+
+const { values } = parseArgs({
+	options: {
+		help: { type: 'boolean', short: 'h' },
+		folder: { type: 'string', short: 'f' }
+	}
+});
 
 /**
  * Apunte #2:
  * `PORT` define en qué puerto escuchará el servidor, y `HOST` en qué interfaz de red lo hará.
  * Usar `localhost` limita el acceso al equipo local, mientras que `0.0.0.0` lo expone a la red.
  * Asignar el puerto a `0` le indica al sistema operativo que elija uno libre automáticamente.
- * Puedes definir estas variables al ejecutar el script: `PORT=3000 HOST=0.0.0.0 node main.js carpeta`.
+ * Puedes definir estas variables al ejecutar el script: `PORT=3000 HOST=0.0.0.0 node main.js`.
  */
 
 // Configurando la carpeta pública y las variables del servidor
-const PUBLIC_DIR = path.resolve(process.argv[2] ?? '.');
+const PUBLIC_DIR = path.resolve(values.folder ?? './public');
 const PORT = process.env.PORT ?? 0;
 const HOST = process.env.HOST ?? 'localhost';
 
-if (!process.argv[2]) console.log(
-	c('red', 'Uso: node main.js <carpeta>'),
-	c('green', '[opcional: directorio actual]'),
-	'\nDescripción: Inicia un servidor HTTP de la carpeta especificada.'
+if (values.help) console.log(
+	c('cyan', 'Uso: node main.js -f <carpeta> [opcional: directorio actual]'),
+	'\nDescripción: Inicia un servidor HTTP de la carpeta especificada.\n'
 );
 
 /**
@@ -126,7 +132,7 @@ server.listen(PORT, HOST, () => {
 	// Mostrando información del servidor al iniciar
     const { port } = server.address();
 	console.log(
-		c('magenta', '\nServidor HTTP iniciado en:'), c('yellow', `http://${HOST}:${port}`),
+		c('magenta', 'Servidor HTTP iniciado en:'), c('yellow', `http://${HOST}:${port}`),
 		c('cyan', '\nCarpeta pública:'), c('yellow', PUBLIC_DIR),
 		c('gray', `\nDetén el servidor presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);
