@@ -1,15 +1,15 @@
 {
-  "nombre": "JSON",
-  "fecha": "01-01-2000",
-  "activo": true,
-  "elementos": [
+  "name": "JSON",
+  "date": "01-01-2000",
+  "active": true,
+  "elements": [
     {
       "id": 1,
-      "descripción": "Elemento 1"
+      "description": "Element 1"
     },
     {
       "id": 2,
-      "descripción": "Elemento 2"
+      "description": "Element 2"
     }
   ]
 }

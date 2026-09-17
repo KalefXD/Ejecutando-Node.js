@@ -169,7 +169,7 @@ server.listen(PORT, HOST, () => {
 	const { port } = server.address();
 	console.log(
 		c('magenta', 'API de Notas iniciado en:'), c('yellow', `http://${HOST}:${port}/`),
-		'\nPrueba la API usando el archivo "cliente.html" o curl, ejecutando: curl <url>',
+		'\nPrueba la API usando el archivo "client.html" o curl, ejecutando: curl <url>',
 		'\nOpciones de curl con argumento para poner método, encabezados y datos: -X -H -d',
 		c('gray', `\nDetén la API presionando Ctrl+C o ejecutando: kill ${process.pid}\n`)
 	);

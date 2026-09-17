@@ -1,4 +1,0 @@
-Este es un archivo de prueba.
-Contiene multiples lineas.
-1234567890
-!@#$%^&*()

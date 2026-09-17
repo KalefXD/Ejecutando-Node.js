@@ -12,10 +12,9 @@ import { styleText as c } from 'node:util';
 
 /*
  * Apunte #2:
- * NPM (Node Package Manager) es el gestor de paquetes de Node.js (`npm`), y también
- * el nombre del registro público donde se publican paquetes (https://www.npmjs.com/).
- * Un paquete es un conjunto de código que puede reutilizarse en un proyecto.
- * Una dependencia es un paquete externo que el proyecto puede necesitar para funcionar.
+ * NPM (Node Package Manager) es el gestor de paquetes de Node.js (`npm`),
+ * y también el nombre de su registro público de paquetes (https://www.npmjs.com/).
+ * Una dependencia es un recurso que un proyecto necesita para funcionar correctamente, como un paquete o módulo de terceros.
  * Sus dependencias directas se declaran en el archivo `package.json` y pueden gestionarse mediante `npm`.
  * `npm` es una herramienta de línea de comandos que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
  * así como ejecutar líneas de comandos definidas en el `package.json`. Existen alternativas a `npm` como `pnpm` o `yarn`.

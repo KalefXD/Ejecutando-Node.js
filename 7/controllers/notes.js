@@ -4,19 +4,10 @@ import { createNoteSchema, updateNoteSchema } from '../notas.schema.js';
 export default class notesController {
 	// Obtener todas las notas
 	static async getAll(req, res) {
-		const notes = await noteModel.getAll();
-
 		const { tags } = req.query;
+	
+		const notes = await noteModel.getAll({ tags });
 
-		// Aplicando filtro por etiquetas si se especifica una
-		if (tags) {
-			const notesFiltered = notes.filter(note =>
-				note.tags && note.tags.some(tag => tag.toLowerCase() === tags.toLowerCase())
-			);
-			return res.json(notesFiltered);
-		}
-
-		// Devolviendo todas las notas si no hay filtros
 		res.json(notes);
 	}
 
@@ -41,16 +32,7 @@ export default class notesController {
 			});
 		}
 
-		// Creando nueva nota con los datos validados y metadatos automáticos
-		const newNote = {
-			id: crypto.randomUUID(),
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			...result.data
-		};
-
-		// Agregando a la "base de datos" en memoria
-		await noteModel.add(newNote);
+		await noteModel.add(result.data);
 
 		res.status(201).json(newNote);
 	}
@@ -75,11 +57,7 @@ export default class notesController {
 			});
 		}
 
-		const newNote = Object.assign(note, result.data, {
-			updatedAt: new Date()
-		});
-
-		await noteModel.update(req.params.id, newNote);
+		const newNote = await noteModel.update(req.params.id, result.data);
 		res.json(newNote);
 	}
 }

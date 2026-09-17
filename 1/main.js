@@ -5,6 +5,7 @@
  * Node.js tiene módulos nativos que permiten interactuar con el sistema operativo y realizar tareas comunes.
  * Un módulo nativo es un módulo que viene incluido por defecto con el lenguaje o entorno de ejecución.
  * Un módulo es una archivo que exporta parte de su código para reutilizarlo.
+ * Un paquete es una carpeta que agrupa varios módulos relacionados y, posiblemente, otros paquetes.
  * 
  * El módulo `node:os` permite consultar datos del sistema operativo en el que se ejecuta Node.js.
  * El módulo `node:util` ofrece diversas utilidades para el desarrollo.
@@ -12,8 +13,8 @@
  * `styleText` aplica colores y estilos a un texto mediante secuencias de escape ANSI.
  * Para poder quitar esos caracteres de formato, `node:util` también incluye `stripVTControlCharacters()`.
  * 
- * El prefijo `node:` indica que el módulo es nativo de Node.js,
- * esto evita confusiones con paquetes de terceros que tengan el mismo nombre.
+ * El prefijo `node:` es un scheme de URL (`http:`, `data:`, etc) que Node.js reserva exclusivamente para sus módulos nativos,
+ * evitando así la resolución hacia paquetes de terceros.
  */
 
 // Importando módulos nativos de Node.js

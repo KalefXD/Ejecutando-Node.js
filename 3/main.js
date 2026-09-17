@@ -1,18 +1,33 @@
-// 3. Listando el contenido de una carpeta
+/**
+ * 3. Listando el contenido de una carpeta
+ * 
+ * Apunte #1:
+ * `parseArgs` permite manejar los argumentos usando opciones con nombre (ej. --help) y abreviaturas (ej. -h).
+ * Para obtener información detallada de cada argumento, indicarle `tokens: true` permite extraer `tokens`,
+ * un array de objetos que contiene el tipo, nombre, posición, valor, etc., de cada argumento.
+ */
 
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { styleText as c } from 'node:util';
+import { parseArgs, styleText as c } from 'node:util';
+
+// Parseando los argumentos de la línea de comandos
+const { values } = parseArgs({
+	args: process.argv.slice(2),
+	options: {
+		help: { type: 'boolean', short: 'h' },
+		folder: { type: 'string', short: 'f' }
+	}
+});
 
 // Definiendo la carpeta a listar (directorio actual por defecto)
-const folder = process.argv[2] ?? '.';
+const folder = values.folder ?? '.';
 
-// Mostrando mensaje de uso si no se pasa un argumento
-if (!process.argv[2]) console.log(
-	c('red', 'Uso: node main.js <carpeta>'),
-	c('green', '[opcional: directorio actual]'),
+// Mostrando mensaje de uso si se solicita ayuda
+if (values.help) console.log(
+	c('cyan', 'Uso: node main.js -f <carpeta> [opcional: directorio actual]'),
 	'\nDescripción: Lista el contenido de un directorio.',
-	c('yellow', '\nEjemplo: node main.js carpeta\n')
+	c('yellow', '\nEjemplo: node main.js -f folder\n')
 );
 
 // Mostrando encabezado con la ruta absoluta del directorio
@@ -32,7 +47,7 @@ await fs.readdir(folder)
 console.groupEnd();
 
 /**
- * Apunte #1:
+ * Apunte #2:
  * Se usa una función `async` dentro de `.then()` para poder utilizar `await`.
  * Una función `async` siempre devuelve una Promise.
  * Si ocurre un error durante un `await`, la Promise se rechaza y el `.catch()` de la cadena puede capturarlo.
@@ -58,13 +73,11 @@ async function showDirFiles(files) {
 			const fullPath = path.join(folder, file);
 
 			/**
-			 * Apunte #2:
-			 * Si se necesita consultar los metadatos de un enlace simbólico
-			 * en lugar del archivo al que apunta, se usa `fs.lstat()`.
+			 * Apunte #3:
+			 * Para poder leer los metadatos de un enlace simbólico en lugar del archivo al que apunta, se usa `fs.lstat()`.
 			 * 
 			 * Un error al intentar acceder a un archivo puede deberse a permisos insuficientes,
-			 * a que el archivo fue eliminado mientras se leía el directorio,
-			 * o a que el archivo es un enlace simbólico roto.
+			 * que el archivo fue eliminado mientras se leía el directorio, o que el archivo es un enlace simbólico roto.
 			 */
 
 			// Obteniendo información del archivo

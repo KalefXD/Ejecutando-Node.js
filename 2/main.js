@@ -5,8 +5,7 @@
  * El módulo `node:process` permite acceder a información y controlar el proceso en ejecución.
  * El módulo `node:path` proporciona utilidades para trabajar con rutas de archivos y directorios de forma multiplataforma.
  * El módulo `node:fs` permite interactuar con el sistema de archivos mediante callbacks,
- * mientras que `node:fs/promises` es su interfaz basada en promesas,
- * lo que facilita el manejo de operaciones asíncronas sin anidar callbacks.
+ * mientras que `node:fs/promises` es su interfaz basada en promesas, evitando el uso de callbacks anidados.
  */
 
 import { argv, exit } from 'node:process';
@@ -19,9 +18,6 @@ import { styleText as c } from 'node:util';
  * `process` es un objeto de ámbito global exclusivo de Node.js: no necesita importarse y no existe en los navegadores.
  * En este script se importa explícitamente desde `node:process` para dejar claro su origen,
  * pero al ser un objeto de ámbito global de Node.js, los scripts siguientes lo usarán directamente sin necesidad de importarlo.
- *
- * Existe un método de `node:util` llamado `parseArgs` que permite manejar los argumentos de forma más estructurada.
- * En este ejemplo no se usa para mantener el script más simple.
  */
 
 // Extrayendo argumentos de la línea de comandos
@@ -49,7 +45,13 @@ const filePath = path.resolve(fileArg);
 try {
 	// Verificando si se tiene acceso al archivo
 	await fs.access(filePath);
-} catch {
+} catch (err) {
+	// Terminando el proceso si ocurre un error distinto a "archivo no encontrado"
+	if (err.code !== 'ENOENT') {
+		console.error(c('red', 'Error al acceder al archivo:'), err.message);
+		exit(1);
+	}
+
 	// Creando un archivo vacío si el archivo no existe
 	console.log(c('cyan', 'El archivo no existe, se creará uno nuevo...'));
 

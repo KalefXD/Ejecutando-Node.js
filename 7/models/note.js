@@ -1,7 +1,13 @@
 const notes = [];
 
 export default class noteModel {
-	static async getAll() {
+	static async getAll({ tags } = {}) {
+		if (tags) {
+			return notes.filter(note =>
+				note.tags && note.tags.some(tag => tag.toLowerCase() === tags.toLowerCase())
+			);
+		}
+
 		return notes.map(note => ({ ...note }));
 	}
 
@@ -10,17 +16,28 @@ export default class noteModel {
 		return note ? { ...note } : null;
 	}
 
-	static async add(note) {
-		notes.push({ ...note });
-		return { ...note };
+	static async add(data) {
+		const newNote = {
+			id: crypto.randomUUID(),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			...data
+		};
+
+		notes.push({ ...newNote });
+		return { ...newNote };
 	}
 
 	static async update(id, data) {
 		const index = notes.findIndex(note => note.id === id);
 		if (index === -1) return null;
 
-		notes[index] = { ...notes[index], ...data, id };
-		return { ...notes[index] };
+		const newNote = Object.assign(notes[index], data, {
+			updatedAt: new Date()
+		});
+
+		notes[index] = { ...newNote };
+		return { ...newNote };
 	}
 
 	static async delete(id) {

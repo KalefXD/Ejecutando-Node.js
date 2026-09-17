@@ -6,7 +6,6 @@
  */
 
 import express from 'express';
-import cors from 'cors';
 import { styleText as c } from 'node:util';
 import notesRouter from './routes/notes.js';
 
@@ -16,9 +15,6 @@ const app = express();
 
 // Middleware para parsear automáticamente el cuerpo de las peticiones como JSON
 app.use(express.json());
-
-// Middleware para habilitar CORS
-app.use(cors());
 
 /**
  * Apunte #2:
@@ -31,12 +27,9 @@ app.disable('x-powered-by');
 
 app.use('/api', notesRouter);
 
-
-
 app.listen(PORT, HOST, () => {
-	const { port } = app.address();
 	console.log(
-		c('magenta', 'APP de Notas con Express iniciado en:'), c('yellow', `http://${HOST}:${port}`),
-		c('gray', `Detén la APP con Ctrl+C o: kill ${process.pid}\n`)
+		c('magenta', 'APP de Notas con Express iniciado en:'), c('yellow', `http://${HOST}:${PORT}`),
+		c('gray', `\nDetén la APP con Ctrl+C o: kill ${process.pid}\n`)
 	);
 });
