@@ -13,8 +13,7 @@
  * `styleText` aplica colores y estilos a un texto mediante secuencias de escape ANSI.
  * Para poder quitar esos caracteres de formato, `node:util` también incluye `stripVTControlCharacters()`.
  * 
- * El prefijo `node:` es un scheme de URL (`http:`, `data:`, etc) que Node.js reserva exclusivamente para sus módulos nativos,
- * evitando así la resolución hacia paquetes de terceros.
+ * El prefijo `node:` es un scheme de URL (`http:`, `data:`, etc) que Node.js reserva exclusivamente para sus módulos nativos.
  */
 
 // Importando módulos nativos de Node.js

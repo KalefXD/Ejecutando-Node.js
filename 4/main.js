@@ -3,7 +3,7 @@
  * 
  * Apunte #1:
  * El módulo `node:readline` permite leer y procesar entradas de texto línea por línea desde la consola o desde un flujo de datos.
- * Esto facilita la creación de interfaces de línea de comandos (CLI) interactivas.
+ * Permitiendo crear interfaces de usuario interactivas en la terminal, como menús, formularios o prompts.
  * Puede leer datos desde un flujo de entrada (como `stdin` para el teclado) y escribirlos en un flujo de salida (como `stdout`).
  */
 
@@ -14,9 +14,10 @@ import { styleText as c } from 'node:util';
  * Apunte #2:
  * NPM (Node Package Manager) es el gestor de paquetes de Node.js (`npm`),
  * y también el nombre de su registro público de paquetes (https://www.npmjs.com/).
- * Una dependencia es un recurso que un proyecto necesita para funcionar correctamente, como un paquete o módulo de terceros.
- * Sus dependencias directas se declaran en el archivo `package.json` y pueden gestionarse mediante `npm`.
- * `npm` es una herramienta de línea de comandos que instala por defecto Node.js y permite instalar, actualizar y gestionar dependencias,
+ * Una dependencia es un recurso que un proyecto necesita para funcionar correctamente, como un módulo, biblioteca o paquete de código.
+ * Una dependencia externa es un recurso que no forma parte del proyecto y debe instalarse desde un registro de paquetes, como NPM.
+ * `npm` es una herramienta de línea de comandos que instala por defecto Node.js, que permite instalar (`npm install`),
+ * actualizar (`npm update`), desinstalar (`npm uninstall`) y administrar dependencias de un proyecto Node.js,
  * así como ejecutar líneas de comandos definidas en el `package.json`. Existen alternativas a `npm` como `pnpm` o `yarn`.
  * `package.json` es el archivo de configuración y metadatos principal de un proyecto Node.js.
  * Contiene información del proyecto, sus dependencias y los scripts que se pueden ejecutar con `npm`.
@@ -48,7 +49,7 @@ const z = await import('zod')
 		process.exit(1);
 	});
 
-// Creando una interfaz readline usando la entrada/salida estándar
+// Creando una interfaz readline usando la entrada/salida standard de la terminal (stdin/stdout)
 const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout
@@ -77,9 +78,11 @@ const UserSchema = z.object({
 		.positive('La edad debe ser un número positivo')
 		.max(120, 'La edad no puede ser mayor a 120'),
 	email: z.email('El correo electrónico debe ser válido'),
-	isActive: z.string().transform(value => 
-		['sí', 'si', 'true', '1'].includes(value.toLowerCase())
-	).optional()
+	isActive: z.string().transform(value => {
+		// Permitiendo que el campo sea opcional si no se ingresa ningún valor
+		if (!value) return undefined;
+		return ['sí', 'si', 'true', '1'].includes(value.toLowerCase())
+	}).optional()
 });
 
 // Compilando el esquema para optimizar la validación

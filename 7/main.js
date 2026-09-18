@@ -27,6 +27,23 @@ app.disable('x-powered-by');
 
 app.use('/api', notesRouter);
 
+// Respondiendo con un error 404 (Not Found) si ninguna ruta anterior coincidió
+app.use((req, res) => {
+	res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
+// Middleware de manejo de errores: captura cualquier error ocurrido en las rutas anteriores
+app.use((err, req, res, next) => {
+	console.error(c('red', 'Error:'), err.message);
+ 
+	// Detectando específicamente un cuerpo JSON malformado enviado por el cliente
+	if (err.type === 'entity.parse.failed') {
+		return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido' });
+	}
+ 
+	res.status(500).json({ error: 'Error interno del servidor' });
+});
+
 app.listen(PORT, HOST, () => {
 	console.log(
 		c('magenta', 'APP de Notas con Express iniciado en:'), c('yellow', `http://${HOST}:${PORT}`),

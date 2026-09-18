@@ -28,16 +28,33 @@ export default class noteModel {
 		return { ...newNote };
 	}
 
+	// Actualiza una nota combinando (merge) los campos enviados sobre los que ya tenía
 	static async update(id, data) {
 		const index = notes.findIndex(note => note.id === id);
 		if (index === -1) return null;
 
+		delete data.id; delete data.createdAt;
 		const newNote = Object.assign(notes[index], data, {
 			updatedAt: new Date()
 		});
 
 		notes[index] = { ...newNote };
 		return { ...newNote };
+	}
+
+	// Reemplaza una nota por completo, conservando su id y fecha de creación original
+	static async replace(id, data) {
+		const index = notes.findIndex(note => note.id === id);
+		if (index === -1) return null;
+
+		delete data.id; delete data.createdAt;
+		const replacedNote = {
+			...data,
+			updatedAt: new Date()
+		};
+
+		notes[index] = replacedNote;
+		return { ...replacedNote };
 	}
 
 	static async delete(id) {

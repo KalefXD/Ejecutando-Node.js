@@ -35,10 +35,10 @@ export default class noteModel {
 		const notes = await loadNotes();
 
 		const note = {
+			...data,
 			id: crypto.randomUUID(),
 			createdAt: new Date().toISOString(),
-			modifiedAt: new Date().toISOString(),
-			...data
+			modifiedAt: new Date().toISOString()
 		};
 
 		// Validando que el campo "title" sea obligatorio y no esté vacío
@@ -63,9 +63,10 @@ export default class noteModel {
 
 		// Evitando que se cambie el id y la fecha de creación de la nota
 		delete data.id; delete data.createdAt;
-		data.modifiedAt = new Date().toISOString();
+		notes[index] = Object.assign(notes[index], data, {
+			updatedAt: new Date().toISOString()
+		});
 
-		notes[index] = { ...data };
 		await saveNotes(notes);
 		return notes[index];
 	}
